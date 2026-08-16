@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-08-16T21:56:27.440Z",
+  "total": 2,
+  "articles": [
+    {
+      "slug": "2026-08-15-webgpu-modern-web-llm",
+      "filename": "2026-08-15-webgpu-modern-web-llm.md",
+      "title": "WebGPUとWebLLMで実現する完全ローカルAIブラウザ実行のすべて",
+      "date": "2026-08-15",
+      "tags": [
+        "WebGPU",
+        "WebLLM",
+        "AI",
+        "ブラウザ技術",
+        "パフォーマンス"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "source_type": "video",
+      "source_title": "YouTube - Next-Gen In-Browser AI with WebGPU and WebLLM",
+      "video_id": "dQw4w9WgXcQ",
+      "summary": "ブラウザ上でLLMをゼロサーバー・ゼロAPIコストで高速実行するWebLLMの技術的背景と、WebGPUシェーダー最適化、メモリ管理手法を動画から要約。"
+    },
+    {
+      "slug": "2026-08-10-gemini-flash-multimodal",
+      "filename": "2026-08-10-gemini-flash-multimodal.md",
+      "title": "Gemini 2.0 Flashのマルチモーダルリアルタイム処理アーキテクチャ解説",
+      "date": "2026-08-10",
+      "tags": [
+        "AI",
+        "LLM",
+        "マルチモーダル",
+        "Web開発"
+      ],
+      "source_url": "https://developers.googleblog.com/en/gemini-2-flash-thinking-mode/",
+      "source_type": "article",
+      "source_title": "Google Developers Blog - Introducing Gemini 2.0 Flash",
+      "video_id": "",
+      "summary": "Gemini 2.0 Flashの低遅延ストリーミング処理とマルチモーダル入力（音声・映像・テキスト）の統合制御について要点を整理。WebSocketを活用したリアルタイム双方向通信の設計パターンを解説します。"
+    }
+  ]
+}

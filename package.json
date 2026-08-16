@@ -1,0 +1,21 @@
+{
+  "name": "my-article-tech-summaries",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/build-index.js && vite build",
+    "preview": "vite preview",
+    "build:index": "node scripts/build-index.js"
+  },
+  "dependencies": {
+    "@mlc-ai/web-llm": "^0.2.78",
+    "dompurify": "^3.2.4",
+    "js-yaml": "^4.1.0",
+    "marked": "^15.0.7"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}

@@ -1,0 +1,235 @@
+import { formatDate } from './utils.js';
+
+class ArticleListManager {
+  constructor() {
+    this.articles = [];
+    this.filteredArticles = [];
+    this.selectedTag = 'all';
+    this.searchQuery = '';
+    this.sortBy = 'newest';
+
+    this.searchInput = document.getElementById('search-input');
+    this.sortSelect = document.getElementById('sort-select');
+    this.tagsContainer = document.getElementById('tags-container');
+    this.articlesGrid = document.getElementById('articles-grid');
+    this.resultCountLive = document.getElementById('result-count-live');
+    this.emptyState = document.getElementById('empty-state');
+
+    this.init();
+  }
+
+  async init() {
+    try {
+      await this.loadIndex();
+      this.setupEventListeners();
+      this.renderTags();
+      this.applyFilters();
+    } catch (err) {
+      console.error('Failed to initialize article list:', err);
+      if (this.articlesGrid) {
+        this.articlesGrid.innerHTML = `
+          <div class="alert alert-error" role="alert">
+            <p><strong>記事データの読み込みに失敗しました。</strong></p>
+            <p><code>npm run build:index</code> が実行されているかご確認ください。</p>
+          </div>
+        `;
+      }
+    }
+  }
+
+  async loadIndex() {
+    // 相対パスで index.json を取得 (GitHub Pages対応)
+    const res = await fetch('./content/index.json');
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    const data = await res.json();
+    this.articles = data.articles || [];
+    this.filteredArticles = [...this.articles];
+  }
+
+  setupEventListeners() {
+    if (this.searchInput) {
+      this.searchInput.addEventListener('input', (e) => {
+        this.searchQuery = e.target.value.trim().toLowerCase();
+        this.applyFilters();
+      });
+    }
+
+    if (this.sortSelect) {
+      this.sortSelect.addEventListener('change', (e) => {
+        this.sortBy = e.target.value;
+        this.applyFilters();
+      });
+    }
+  }
+
+  renderTags() {
+    if (!this.tagsContainer) return;
+
+    // 全記事からタグを収集・集計
+    const tagCountMap = {};
+    for (const article of this.articles) {
+      if (Array.isArray(article.tags)) {
+        for (const tag of article.tags) {
+          tagCountMap[tag] = (tagCountMap[tag] || 0) + 1;
+        }
+      }
+    }
+
+    const uniqueTags = Object.keys(tagCountMap).sort();
+
+    let html = `
+      <li>
+        <button type="button" class="tag-chip ${this.selectedTag === 'all' ? 'is-active' : ''}" data-tag="all" aria-pressed="${this.selectedTag === 'all'}">
+          すべて (${this.articles.length})
+        </button>
+      </li>
+    `;
+
+    uniqueTags.forEach((tag) => {
+      const isActive = this.selectedTag === tag;
+      html += `
+        <li>
+          <button type="button" class="tag-chip ${isActive ? 'is-active' : ''}" data-tag="${tag}" aria-pressed="${isActive}">
+            #${tag} (${tagCountMap[tag]})
+          </button>
+        </li>
+      `;
+    });
+
+    this.tagsContainer.innerHTML = html;
+
+    // タグクリックイベント
+    this.tagsContainer.querySelectorAll('button[data-tag]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const tag = e.currentTarget.getAttribute('data-tag');
+        this.selectedTag = tag;
+        
+        // ボタン状態更新
+        this.tagsContainer.querySelectorAll('button[data-tag]').forEach((b) => {
+          const active = b.getAttribute('data-tag') === tag;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-pressed', active);
+        });
+
+        this.applyFilters();
+      });
+    });
+  }
+
+  applyFilters() {
+    this.filteredArticles = this.articles.filter((article) => {
+      // タグ判定
+      if (this.selectedTag !== 'all') {
+        if (!article.tags || !article.tags.includes(this.selectedTag)) {
+          return false;
+        }
+      }
+
+      // 検索キーワード判定 (タイトル、要約、タグ、出典元タイトル)
+      if (this.searchQuery) {
+        const titleMatch = (article.title || '').toLowerCase().includes(this.searchQuery);
+        const summaryMatch = (article.summary || '').toLowerCase().includes(this.searchQuery);
+        const sourceMatch = (article.source_title || '').toLowerCase().includes(this.searchQuery);
+        const tagMatch = (article.tags || []).some((t) => t.toLowerCase().includes(this.searchQuery));
+        if (!titleMatch && !summaryMatch && !sourceMatch && !tagMatch) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    // ソート
+    if (this.sortBy === 'newest') {
+      this.filteredArticles.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    } else if (this.sortBy === 'oldest') {
+      this.filteredArticles.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    }
+
+    this.renderArticles();
+  }
+
+  renderArticles() {
+    if (!this.articlesGrid) return;
+
+    // スクリーンリーダー通知 (aria-live)
+    if (this.resultCountLive) {
+      this.resultCountLive.textContent = `検索結果: ${this.filteredArticles.length}件の記事が見つかりました。`;
+    }
+
+    if (this.filteredArticles.length === 0) {
+      this.articlesGrid.innerHTML = '';
+      if (this.emptyState) {
+        this.emptyState.style.display = 'block';
+      }
+      return;
+    }
+
+    if (this.emptyState) {
+      this.emptyState.style.display = 'none';
+    }
+
+    const cardsHtml = this.filteredArticles
+      .map((article) => {
+        const isVideo = article.source_type === 'video';
+        const sourceBadgeClass = isVideo ? 'video' : 'article';
+        const sourceBadgeLabel = isVideo ? '動画' : '記事';
+        const formattedDate = formatDate(article.date);
+
+        const tagsHtml = (article.tags || [])
+          .map((t) => `<span class="tag-chip">#${t}</span>`)
+          .join(' ');
+
+        const sourceIcon = isVideo
+          ? `<svg class="icon-source" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`
+          : `<svg class="icon-source" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`;
+
+        return `
+          <li class="article-card">
+            <div class="article-card-header">
+              <time datetime="${article.date}">${formattedDate}</time>
+              <span class="badge-source ${sourceBadgeClass}">
+                ${sourceIcon}
+                <span>${sourceBadgeLabel}</span>
+              </span>
+            </div>
+            
+            <h2 class="article-card-title">
+              <a href="./article.html?id=${encodeURIComponent(article.slug)}" class="article-card-link">
+                ${escapeHtml(article.title)}
+              </a>
+            </h2>
+
+            <p class="article-card-summary">
+              ${escapeHtml(article.summary || '要約がありません')}
+            </p>
+
+            <div class="article-card-footer">
+              <div class="tag-list" aria-label="記事のタグ">
+                ${tagsHtml}
+              </div>
+            </div>
+          </li>
+        `;
+      })
+      .join('');
+
+    this.articlesGrid.innerHTML = cardsHtml;
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  new ArticleListManager();
+});

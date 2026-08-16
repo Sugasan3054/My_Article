@@ -1,0 +1,29 @@
+# 依存関係
+node_modules/
+
+# ビルド成果物(GitHub Actionsでビルドする場合。直接publishするなら除外しない)
+dist/
+.vite/
+
+# 環境変数・秘密情報
+.env
+.env.local
+*.key
+*.pem
+
+# WebLLMのキャッシュ
+.wllm-cache/
+models/
+
+# エディタ・OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ログ
+*.log
+npm-debug.log*
+
+# 個人的な下書き(公開したくない記事)
+content/drafts/

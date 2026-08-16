@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>技術記事要約サイト | Tech Article Summaries</title>
+  <meta name="description" content="最新の技術記事やテック動画の要約を素早くチェックできるナレッジポータル。">
+  <link rel="stylesheet" href="./src/css/base.css">
+  <link rel="stylesheet" href="./src/css/components.css">
+</head>
+<body>
+  <!-- メインコンテンツへスキップリンク (アクセシビリティ) -->
+  <a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
+
+  <!-- ヘッダー -->
+  <header class="site-header">
+    <div class="site-container site-header-inner">
+      <a href="./index.html" class="site-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span>Tech Summary Hub</span>
+      </a>
+
+      <nav aria-label="主要ナビゲーション">
+        <ul class="site-nav-list">
+          <li>
+            <a href="./index.html" class="site-nav-link" aria-current="page">記事一覧</a>
+          </li>
+          <li>
+            <a href="./summarize.html" class="site-nav-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              <span>要約ツール (自分用)</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main id="main-content" class="site-main">
+    <div class="site-container">
+      <header style="margin-bottom: var(--space-8);">
+        <h1>技術記事・動画の要約アーカイブ</h1>
+        <p style="color: var(--color-text-muted); font-size: var(--font-size-lg);">
+          厳選した最新の技術トレンド、アーキテクチャ解説、テック動画の要約をまとめています。
+        </p>
+      </header>
+
+      <!-- 検索 & 絞り込みセクション -->
+      <section class="filter-section" aria-label="記事の検索と絞り込み">
+        <div class="filter-controls">
+          <div class="search-box">
+            <svg class="search-box-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <label for="search-input" class="sr-only">記事をキーワードで検索</label>
+            <input type="search" id="search-input" placeholder="キーワード検索 (タイトル、要約、タグ)...">
+          </div>
+
+          <div class="sort-select-wrapper">
+            <label for="sort-select" style="font-weight: 600; font-size: var(--font-size-sm);">並び替え:</label>
+            <select id="sort-select" class="form-select">
+              <option value="newest">新着順</option>
+              <option value="oldest">古い順</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-4);">
+          <span style="font-size: var(--font-size-sm); font-weight: 700; color: var(--color-text-muted); display: block; margin-bottom: var(--space-2);">
+            タグで絞り込み:
+          </span>
+          <ul id="tags-container" class="tag-list" aria-label="タグフィルター">
+            <!-- JSで動的生成 -->
+          </ul>
+        </div>
+      </section>
+
+      <!-- スクリーンリーダー向け検索結果アナウンス -->
+      <div id="result-count-live" class="sr-only" aria-live="polite"></div>
+
+      <!-- 記事カード一覧 -->
+      <section aria-label="記事一覧">
+        <ul id="articles-grid" class="articles-grid">
+          <!-- JSで動的生成 -->
+        </ul>
+
+        <div id="empty-state" class="alert alert-info" style="display: none; margin-top: var(--space-6);" role="status">
+          <p>該当する記事が見つかりませんでした。検索条件を変更してください。</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="site-footer">
+    <div class="site-container site-footer-inner">
+      <div>
+        <p><strong>Tech Summary Hub</strong> - GitHub Pagesでホスティングされた静的ナレッジベース</p>
+      </div>
+      <div>
+        <a href="./summarize.html">WebLLM 要約作成ツール</a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="./src/js/articles.js"></script>
+</body>
+</html>

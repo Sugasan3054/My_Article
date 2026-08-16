@@ -1,0 +1,139 @@
+/**
+ * デジタル庁デザインシステムを参考にしたデザイントークン
+ * - コントラスト比 4.5:1 以上を担保
+ * - 8px グリッドシステム
+ * - ダークモード対応 (prefers-color-scheme)
+ */
+
+:root {
+  /* カラーパレット (ライトモード) */
+  --color-primary: #005ea2;            /* アクション・メインブルー (コントラスト比 4.5:1以上) */
+  --color-primary-hover: #004098;      /* ホバー時濃色 */
+  --color-primary-active: #002966;     /* アクティブ時 */
+  --color-primary-light: #e8f1fa;      /* 薄い背景用ライトブルー */
+  --color-primary-border: #99c2ec;     /* ボーダー用ライトブルー */
+  
+  --color-text-main: #1b1b1b;          /* 主要テキスト (コントラスト比 15:1以上) */
+  --color-text-muted: #4d5156;         /* 補助テキスト (コントラスト比 6:1以上) */
+  --color-text-inverse: #ffffff;       /* 反転テキスト */
+  --color-link: #004098;               /* リンク色 (下線と併用) */
+  --color-link-hover: #002966;         /* リンクホバー */
+  
+  --color-bg-body: #f8fafc;            /* ページ背景 */
+  --color-bg-surface: #ffffff;         /* カード・パネル背景 */
+  --color-bg-subtle: #f1f5f9;          /* 入力欄・サブ領域背景 */
+  --color-border: #cbd5e1;             /* 標準ボーダー */
+  --color-border-strong: #94a3b8;      /* 強調ボーダー */
+  
+  --color-focus-ring: #005ea2;         /* フォーカスリング */
+  --color-focus-bg: #ffd15c;           /* 高コントラストフォーカス背景 (必要時) */
+
+  /* ステータスカラー */
+  --color-success-bg: #edf7ed;
+  --color-success-text: #1e4620;
+  --color-success-border: #4caf50;
+  
+  --color-warning-bg: #fff8e1;
+  --color-warning-text: #5d3e00;
+  --color-warning-border: #f57c00;
+  
+  --color-error-bg: #fde8e8;
+  --color-error-text: #611a15;
+  --color-error-border: #d32f2f;
+  
+  --color-info-bg: #e8f1fa;
+  --color-info-text: #002966;
+  --color-info-border: #005ea2;
+
+  /* 余白スケール (8px基準) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* タイポグラフィ */
+  --font-family-sans: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  
+  --font-size-xs: 0.8125rem; /* 13px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-base: 1rem;    /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem;  /* 36px */
+
+  --line-height-tight: 1.3;
+  --line-height-normal: 1.7;
+  --line-height-loose: 1.9;
+
+  /* コンテナ幅・行長 */
+  --max-width-content: 72ch; /* 1行あたり可読性の高い文字数 */
+  --max-width-container: 1120px;
+
+  /* 角丸 & 影 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+  /* トランジション */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+}
+
+/* ダークモード */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #58a6ff;
+    --color-primary-hover: #79b8ff;
+    --color-primary-active: #a5d6ff;
+    --color-primary-light: #162438;
+    --color-primary-border: #1f4068;
+
+    --color-text-main: #f0f6fc;
+    --color-text-muted: #adbac7;
+    --color-text-inverse: #0d1117;
+    --color-link: #79b8ff;
+    --color-link-hover: #a5d6ff;
+
+    --color-bg-body: #0d1117;
+    --color-bg-surface: #161b22;
+    --color-bg-subtle: #21262d;
+    --color-border: #30363d;
+    --color-border-strong: #6e7681;
+
+    --color-focus-ring: #58a6ff;
+
+    --color-success-bg: #0e2a18;
+    --color-success-text: #7ee787;
+    --color-success-border: #238636;
+
+    --color-warning-bg: #2b1d07;
+    --color-warning-text: #f0b72f;
+    --color-warning-border: #9e6a03;
+
+    --color-error-bg: #351318;
+    --color-error-text: #ff7b72;
+    --color-error-border: #da3633;
+
+    --color-info-bg: #13233a;
+    --color-info-text: #79b8ff;
+    --color-info-border: #1f6feb;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+  }
+}
