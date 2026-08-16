@@ -1,7 +1,7 @@
-import { CreateMLCEngine } from '@mlc-ai/web-llm';
+import { CreateWebWorkerMLCEngine, CreateMLCEngine } from '@mlc-ai/web-llm';
 import { extractYouTubeId, slugify, renderMarkdown } from './utils.js';
 
-// 推奨モデル定義 (軽量モデルを先頭にして初回ダウンロードの失敗を防ぐ)
+// 推奨モデル定義 (軽量モデルを先頭に配置)
 const AVAILABLE_MODELS = [
   {
     id: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
@@ -10,24 +10,25 @@ const AVAILABLE_MODELS = [
   },
   {
     id: 'SmolLM2-360M-Instruct-q4f16_1-MLC',
-    name: 'SmolLM2-360M (極小・約200MB・低スペック端末向け)',
+    name: 'SmolLM2-360M (極小・約200MB・低スペック向け)',
     size: '約200 MB',
-  },
-  {
-    id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
-    name: 'Qwen2.5-1.5B (高精度日本語・約1.1GB)',
-    size: '約1.1 GB',
   },
   {
     id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
     name: 'Llama-3.2-1B (高速・約800MB)',
     size: '約800 MB',
   },
+  {
+    id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+    name: 'Qwen2.5-1.5B (高精度日本語・約1.1GB)',
+    size: '約1.1 GB',
+  },
 ];
 
 class SummarizerApp {
   constructor() {
     this.engine = null;
+    this.worker = null;
     this.currentModelId = AVAILABLE_MODELS[0].id;
     this.isGenerating = false;
     this.isLoadingEngine = false;
@@ -91,7 +92,7 @@ class SummarizerApp {
     try {
       const adapter = await navigator.gpu.requestAdapter();
       if (!adapter) {
-        this.showWebGPUUnavailable('WebGPUアダプタを取得できませんでした。ブラウザのハードウェアアクセラレーションが有効かご確認ください。');
+        this.showWebGPUUnavailable('WebGPUアダプタを取得できませんでした。ブラウザのハードウェアアクセラレーション設定をご確認ください。');
         return;
       }
       this.hasWebGPU = true;
@@ -141,7 +142,7 @@ class SummarizerApp {
     if (this.modelSelect) {
       this.modelSelect.addEventListener('change', (e) => {
         this.currentModelId = e.target.value;
-        this.engine = null; // モデル切り替え時はエンジン再初期化
+        this.destroyEngine(); // モデル変更時はワーカーとエンジンを再初期化
       });
     }
 
@@ -185,11 +186,19 @@ class SummarizerApp {
     }
   }
 
+  destroyEngine() {
+    if (this.worker) {
+      this.worker.terminate();
+      this.worker = null;
+    }
+    this.engine = null;
+  }
+
   async initEngine() {
     if (this.engine) return this.engine;
 
     this.isLoadingEngine = true;
-    this.showProgress(0, 'WebLLM モデルのダウンロード・初期化を開始しています...（モデルサイズに応じたデータ通信が発生します）');
+    this.showProgress(0, 'WebLLM モデルのダウンロード・初期化を開始しています...（初回のみダウンロードが発生します）');
 
     const initProgressCallback = (report) => {
       const progress = Math.round(report.progress * 100);
@@ -198,14 +207,25 @@ class SummarizerApp {
     };
 
     try {
-      this.engine = await CreateMLCEngine(this.currentModelId, {
-        initProgressCallback,
-      });
-      this.showProgress(100, 'モデルの準備が完了しました！推論を開始します...');
+      // Web Worker を使用してUIのブロッキングを防ぐ
+      if (typeof Worker !== 'undefined') {
+        this.worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+        this.engine = await CreateWebWorkerMLCEngine(this.worker, this.currentModelId, {
+          initProgressCallback,
+        });
+      } else {
+        // フォールバック: メインスレッド
+        this.engine = await CreateMLCEngine(this.currentModelId, {
+          initProgressCallback,
+        });
+      }
+
+      this.showProgress(100, 'モデルの準備が完了しました！要約を生成中...');
       return this.engine;
     } catch (err) {
       console.error('Failed to load WebLLM model:', err);
       this.showProgress(0, `モデルの読み込みエラー: ${err.message}`, true);
+      this.destroyEngine();
       throw err;
     } finally {
       this.isLoadingEngine = false;
@@ -241,14 +261,14 @@ class SummarizerApp {
     try {
       const engine = await this.initEngine();
 
-      this.showProgress(100, 'AIが要約を生成中...');
+      this.showProgress(100, 'AIが要約テキストをリアルタイム生成中...');
 
-      // プレビュー領域を先に開いてストリーミング待機状態にする
+      // プレビュー領域を表示
       if (this.previewSection) {
         this.previewSection.style.display = 'block';
         this.previewSection.scrollIntoView({ behavior: 'smooth' });
       }
-      if (this.editBody) this.editBody.value = '要約を生成しています...';
+      if (this.editBody) this.editBody.value = '';
 
       const systemPrompt = `あなたは優秀な技術コミュニケーターです。入力された技術記事または動画の字幕テキストを読み込み、以下のフォーマットの日本語Markdownで要約を作成してください。
 
@@ -274,25 +294,35 @@ SUMMARY: [一覧カード用の2〜3行の簡潔な要約]
 【元タイトル】: ${sourceTitle || '未指定'}
 【元URL】: ${sourceUrl || '未指定'}
 【本文テキスト】:
-${rawContent.slice(0, 6000)}
+${rawContent.slice(0, 5000)}
 
 上記のフォーマットに沿って日本語で要約を生成してください。`;
 
-      const response = await engine.chat.completions.create({
+      // ストリーミング生成でリアルタイムにテキストを描画
+      const chunks = await engine.chat.completions.create({
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
         temperature: 0.3,
-        stream: false,
+        stream: true,
       });
 
-      const responseText = response.choices[0]?.message?.content || '';
-      this.parseAndPopulateResult(responseText, sourceType, sourceUrl, sourceTitle);
+      let fullResponse = '';
+      for await (const chunk of chunks) {
+        const delta = chunk.choices[0]?.delta?.content || '';
+        fullResponse += delta;
+        if (this.editBody) {
+          this.editBody.value = fullResponse;
+          this.updateMarkdownPreview();
+        }
+      }
+
+      this.parseAndPopulateResult(fullResponse, sourceType, sourceUrl, sourceTitle);
       this.showProgress(100, '要約の生成が完了しました！');
     } catch (err) {
       console.error('Generation failed:', err);
-      alert(`要約生成中にエラーが発生しました: ${err.message}\n\nWebGPUの負荷が高い場合や端末メモリが不足している場合は、軽量モデルをお選びいただくか「クイック抽出モード」をお試しください。`);
+      alert(`要約生成中にエラーが発生しました: ${err.message}\n\n※ 端末のGPUメモリ不足や回線エラーの場合は、「クイック抽出 (WebGPU不要・即時)」ボタンをお試しください。`);
     } finally {
       this.isGenerating = false;
       if (this.btnGenerate) this.btnGenerate.disabled = false;
@@ -314,23 +344,23 @@ ${rawContent.slice(0, 6000)}
     const sourceUrl = (this.sourceUrlInput?.value || '').trim();
     const sourceTitle = (this.sourceTitleInput?.value || '').trim();
 
-    // 文を分割して先頭および重要そうな文を抽出
+    // 文を分割して重要文を抽出
     const sentences = rawContent
       .split(/[\n。！？]/)
       .map((s) => s.trim())
       .filter((s) => s.length > 15);
 
     const title = sourceTitle || (sentences[0] ? sentences[0].slice(0, 40) + '...' : '技術記事要約');
-    const summary = sentences.slice(0, 3).join('。') + '。';
+    const summary = sentences.slice(0, 3).join('。') + (sentences.length > 0 ? '。' : '');
     const points = sentences.slice(3, 8).map((s) => `- ${s}`).join('\n');
 
     const generatedBody = `## 概要
 
-${summary}
+${summary || '概要をここに記載します。'}
 
 ## 主なポイント
 
-${points || '- 本文の重要ポイントをここに記載'}
+${points || '- 本文の主要な論点をここに記載'}
 
 ## 詳細解説
 
@@ -393,7 +423,6 @@ ${sentences.slice(8, 15).join('。\n\n') || rawContent.slice(0, 500)}
 
     if (this.previewSection) {
       this.previewSection.style.display = 'block';
-      this.previewSection.scrollIntoView({ behavior: 'smooth' });
     }
 
     this.updateMarkdownPreview();
