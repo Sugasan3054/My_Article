@@ -136,13 +136,21 @@
           <p class="form-help">※ 初回実行時はブラウザ内にモデルのダウンロード（重みデータ）が行われます。</p>
         </div>
 
-        <!-- 生成ボタン -->
-        <div style="margin-top: var(--space-6);">
-          <button type="button" id="btn-generate" class="btn btn-primary" style="font-size: var(--font-size-lg); padding: var(--space-3) var(--space-8);">
+        <!-- 生成ボタンエリア -->
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-6);">
+          <button type="button" id="btn-generate" class="btn btn-primary" style="font-size: var(--font-size-lg); padding: var(--space-3) var(--space-6);">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span>WebLLMでAI要約を生成</span>
+          </button>
+
+          <button type="button" id="btn-quick-extract" class="btn btn-secondary" style="font-size: var(--font-size-base); padding: var(--space-3) var(--space-6);" title="WebGPUを使わず即座に重要文からMarkdownドラフトを作成します">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            <span>要約を生成する</span>
+            <span>クイック抽出 (WebGPU不要・即時)</span>
           </button>
         </div>
 
