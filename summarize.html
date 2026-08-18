@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
   <title>AI Summarizer | Tech Summary Hub</title>
-  <meta name="description" content="In-browser WebLLM AI summarizer for articles and YouTube transcripts.">
+  <meta name="description" content="Gemini AI summarizer for articles and YouTube transcripts with BYOK privacy.">
   <link rel="stylesheet" href="./src/css/base.css">
   <link rel="stylesheet" href="./src/css/components.css">
   <link rel="stylesheet" href="./src/css/card-nav.css">
@@ -23,18 +23,20 @@
       <div class="card-nav-container card-nav-wrapper">
         <nav class="card-nav" aria-label="Main Navigation">
           <div class="card-nav-top">
-            <button type="button" class="card-nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
-              <span class="card-nav-hamburger-line"></span>
-              <span class="card-nav-hamburger-line"></span>
-            </button>
+            <div class="card-nav-brand-group">
+              <button type="button" class="card-nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span class="card-nav-hamburger-line"></span>
+                <span class="card-nav-hamburger-line"></span>
+              </button>
 
-            <a href="./index.html" class="card-nav-logo">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
-              <span>Tech Summary Hub</span>
-            </a>
+              <a href="./index.html" class="card-nav-logo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span>Tech Summary Hub</span>
+              </a>
+            </div>
 
             <div class="card-nav-actions">
               <a href="./index.html" class="card-nav-cta" data-i18n="navArticles">
@@ -53,46 +55,39 @@
 
           <div class="card-nav-content" aria-hidden="true">
             <div class="nav-card">
-              <div class="nav-card-label" data-i18n="cardNavTopicsTitle">
+              <div class="nav-card-label" data-i18n="cardNavAiTitle">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 </svg>
-                <span>Popular Topics</span>
+                <span>AI & LLM</span>
               </div>
               <div class="nav-card-links">
-                <a href="./index.html" class="nav-card-link"><span>→ All Articles</span></a>
+                <a href="./index.html" class="nav-card-link"><span>→ View All Summaries</span></a>
               </div>
             </div>
 
             <div class="nav-card">
-              <div class="nav-card-label" data-i18n="cardNavToolsTitle">
+              <div class="nav-card-label" data-i18n="cardNavSecurityTitle">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="13 2 13 9 20 9"></polyline>
-                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 </svg>
-                <span>Quick Actions</span>
+                <span>Security</span>
               </div>
               <div class="nav-card-links">
-                <a href="./index.html" class="nav-card-link" data-i18n="navArticles">
-                  <span>→ View Article List</span>
-                </a>
-                <a href="https://github.com/Sugasan3054/My_Article" target="_blank" rel="noopener noreferrer" class="nav-card-link" data-i18n="cardNavActionGh">
-                  <span>→ GitHub Repository</span>
-                </a>
+                <a href="./index.html" class="nav-card-link"><span>→ Security Articles</span></a>
               </div>
             </div>
 
             <div class="nav-card">
-              <div class="nav-card-label" data-i18n="cardNavAboutTitle">
+              <div class="nav-card-label" data-i18n="cardNavDevTitle">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="16" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
                 </svg>
-                <span>Platform</span>
+                <span>Development</span>
               </div>
-              <p class="nav-card-desc" data-i18n="cardNavAboutDesc">
-                Privacy-first tech knowledge repository with zero-server AI summarization.
+              <p class="nav-card-desc" data-i18n="cardNavDevDesc">
+                WebGPU, modern frontend engineering, performance optimization, and system design.
               </p>
             </div>
           </div>
@@ -103,30 +98,15 @@
 
   <!-- メインコンテンツ -->
   <main id="main-content" class="site-main">
-    <div class="site-container">
+    <div class="site-container" style="max-width: 960px;">
       <header style="margin-bottom: var(--space-6);">
-        <h1 data-i18n="summarizerTitle">WebLLM Article Summarizer</h1>
+        <h1 data-i18n="summarizerTitle">Gemini AI Article Summarizer</h1>
         <p style="color: var(--color-text-muted); font-size: var(--font-size-lg);" data-i18n="summarizerSubtitle">
-          Run open-weight AI models locally inside your browser using WebGPU. Completely private with zero API costs.
+          Fast, high-quality technical summaries powered by Google Gemini API. Completely client-side with zero server storage.
         </p>
       </header>
 
-      <!-- WebGPU 非対応警告 -->
-      <div id="webgpu-warning" class="alert alert-error" style="display: none;" role="alert">
-        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-        <div>
-          <strong data-i18n="webgpuWarningTitle">WebGPU is not supported in this browser.</strong>
-          <p style="margin-top: var(--space-2); margin-bottom: 0;" data-i18n="webgpuWarningBody">
-            To run in-browser WebLLM, please use the latest version of Chrome or Edge, or use the "Quick Extract" mode below.
-          </p>
-        </div>
-      </div>
-
-      <!-- セキュリティ運用ノート -->
+      <!-- セキュリティ & 従量課金保護アラート -->
       <div class="alert alert-info">
         <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="10"></circle>
@@ -134,14 +114,62 @@
           <line x1="12" y1="8" x2="12.01" y2="8"></line>
         </svg>
         <div>
-          <strong data-i18n="securityNoteTitle">Static Site Architecture:</strong>
+          <strong data-i18n="securityNoteTitle">Zero-Leak Security & Cost Protection:</strong>
           <p style="margin-top: 4px; margin-bottom: 0;" data-i18n="securityNoteBody">
-            To maintain top security, no GitHub tokens are stored on the client. Generate your summary, download the Markdown file, and push it to your repository.
+            Your API key is never exposed to GitHub or Vercel. A client-side rate limit (max 3 calls/min) and character guard prevent accidental overuse.
           </p>
         </div>
       </div>
 
-      <!-- 入力フォーム -->
+      <!-- 0. Gemini API Key 設定セクション (BYOK) -->
+      <section aria-label="Gemini API Key Settings" style="background-color: var(--color-bg-surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8); box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4);">
+          <h2 style="margin: 0; font-size: var(--font-size-lg); display: inline-flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span data-i18n="apiKeySectionTitle">Gemini API Key Settings (BYOK)</span>
+          </h2>
+          <span id="api-key-status-badge" class="tag-chip" style="font-size: var(--font-size-xs);"></span>
+        </div>
+
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label for="gemini-api-key-input" class="form-label" data-i18n="apiKeyLabel">Your Gemini API Key</label>
+          <div style="display: flex; gap: var(--space-2);">
+            <input type="password" id="gemini-api-key-input" class="form-input" placeholder="AIzaSy..." autocomplete="off">
+            <button type="button" id="btn-toggle-key-visibility" class="btn btn-secondary" style="padding: 0 var(--space-3);" title="Toggle visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          <p class="form-help" data-i18n="apiKeyHelp">
+            Get a free API key from Google AI Studio. Your key is stored exclusively in your browser localStorage and is never uploaded anywhere.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+          <button type="button" id="btn-save-key" class="btn btn-primary" style="font-size: var(--font-size-sm); padding: var(--space-2) var(--space-4);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span data-i18n="apiKeySaveBtn">Save Key</span>
+          </button>
+          <button type="button" id="btn-clear-key" class="btn btn-secondary" style="font-size: var(--font-size-sm); padding: var(--space-2) var(--space-4);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span data-i18n="apiKeyClearBtn">Clear Key</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 1. 入力フォーム -->
       <section aria-label="Input content to summarize" style="background-color: var(--color-bg-surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8); box-shadow: var(--shadow-sm);">
         <h2 style="margin-top: 0; margin-bottom: var(--space-6);" data-i18n="section1Title">1. Enter Content Details</h2>
 
@@ -188,44 +216,43 @@
 
         <!-- 使用モデル選択 -->
         <div class="form-group" style="max-width: 480px;">
-          <label for="model-select" class="form-label" data-i18n="labelModelSelect">WebLLM Model</label>
+          <label for="model-select" class="form-label" data-i18n="labelModelSelect">Gemini Model</label>
           <select id="model-select" class="form-select" style="width: 100%;">
             <!-- JSで動的生成 -->
           </select>
-          <p class="form-help" data-i18n="helpModelSelect">Initial run will cache the model weights inside your browser.</p>
+          <p class="form-help" data-i18n="helpModelSelect">Gemini 1.5 Flash is fast and included in the free tier of Google AI Studio.</p>
         </div>
 
         <!-- 生成ボタンエリア -->
         <div style="display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-6);">
           <button type="button" id="btn-generate" class="btn btn-primary" style="font-size: var(--font-size-base); padding: var(--space-3) var(--space-6);">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 20h9"></path>
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
             </svg>
-            <span data-i18n="btnGenerateAi">Generate AI Summary (WebLLM)</span>
+            <span data-i18n="btnGenerateAi">Generate Summary (Gemini API)</span>
           </button>
 
-          <button type="button" id="btn-quick-extract" class="btn btn-secondary" style="font-size: var(--font-size-base); padding: var(--space-3) var(--space-6);" title="WebGPUを使わず即座に重要文からMarkdownドラフトを作成します">
+          <button type="button" id="btn-quick-extract" class="btn btn-secondary" style="font-size: var(--font-size-base); padding: var(--space-3) var(--space-6);" title="APIを使わず即座に重要文からMarkdownドラフトを作成します">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            <span data-i18n="btnQuickExtract">Quick Extract (Instant / No GPU)</span>
+            <span data-i18n="btnQuickExtract">Quick Extract (Instant / No API)</span>
           </button>
         </div>
 
         <!-- 進捗セクション (aria-live) -->
         <div id="progress-section" class="progress-container" style="display: none; margin-top: var(--space-6);" aria-live="polite">
           <div class="progress-label-row">
-            <span id="progress-status" data-i18n="progressLoading">Downloading & preparing model weights...</span>
-            <span id="progress-percent">0%</span>
+            <span id="progress-status" data-i18n="progressLoading">Connecting to Gemini API...</span>
+            <span id="progress-percent">100%</span>
           </div>
           <div class="progress-bar-track">
-            <div id="progress-bar" class="progress-bar-fill"></div>
+            <div id="progress-bar" class="progress-bar-fill" style="width: 100%;"></div>
           </div>
         </div>
       </section>
 
-      <!-- プレビュー & 編集セクション -->
+      <!-- 2. プレビュー & 編集セクション -->
       <section id="preview-section" style="display: none; background-color: var(--color-bg-surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8); box-shadow: var(--shadow-sm);" aria-label="Review and edit generated summary">
         <h2 style="margin-top: 0; margin-bottom: var(--space-6);" data-i18n="section2Title">2. Review & Edit Generated Summary</h2>
 
@@ -249,7 +276,7 @@
 
           <div class="form-group">
             <label for="edit-tags" class="form-label" data-i18n="labelEditTags">Tags (Comma-separated)</label>
-            <input type="text" id="edit-tags" class="form-input" placeholder="AI, WebGPU, Architecture">
+            <input type="text" id="edit-tags" class="form-input" placeholder="AI, Architecture, Performance">
           </div>
 
           <div class="form-group">
@@ -298,7 +325,7 @@
             <ol style="margin-top: var(--space-2); margin-bottom: 0; padding-left: var(--space-4);">
               <li data-i18n="postDownloadStep1">Move the downloaded .md file into content/articles/</li>
               <li data-i18n="postDownloadStep2">Run `npm run build:index` in terminal to refresh index.</li>
-              <li data-i18n="postDownloadStep3">Commit and push changes to update GitHub Pages.</li>
+              <li data-i18n="postDownloadStep3">Commit and push changes to update GitHub Pages / Vercel.</li>
             </ol>
           </div>
         </div>

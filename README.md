@@ -1,19 +1,39 @@
 # Tech Summary Hub 🚀
 
-ブラウザ内 AI（WebLLM / WebGPU）による**ゼロサーバー・完全プライベート**な技術記事・YouTube動画の要約ナレッジポータルです。
+**Google Gemini API** を活用した、**ゼロサーバー・完全プライベート**な技術記事・YouTube動画の要約ナレッジポータルです。
 GitHub Pages や Vercel 等の静的ホスティングで完全無料で運用できます。
 
 ---
 
 ## 🌟 特徴
 
-- **In-Browser WebLLM / WebGPU 要約**: 外部APIキー不要、通信コストゼロ、サーバーへのデータ送信なしで完全ローカル推論。
+- **Gemini AI 要約エンジン (BYOK: Bring Your Own Key)**:
+  - `gemini-1.5-flash` / `gemini-2.0-flash` による高品質・超高速ストリーミング要約。
+  - **APIキーはブラウザ内（`localStorage`）にのみ保持**され、GitHubやVercel、外部サーバーには 1byte も送信・保存されません。
+- **悪用・不当な従量課金防止のガードレール**:
+  - **無料枠モデル対応**: Google AI Studio の無料枠（15 RPM / 1,500 RPD）の範囲内で安全に利用可能。
+  - **レートリミット制御**: クライアント側で 1分間あたり最大3リクエストに制限（クールダウンタイマー付き）。
+  - **入力長ガード**: 最大25,000文字で自動トリミングし、過剰なトークン消費を防止。
 - **モダンなインタラクション & UI**:
   - **Card Nav**: GSAP Timeline による滑らかな展開・タグ絞り込みメニュー（AI・セキュリティ・開発）。
   - **Split Text**: 単語単位のタイポグラフィアニメーション。
   - **Aurora WebGL Background**: OGL ベースの美しいオーロラ背景シェーダー。
   - **英語 (EN) / 日本語 (JA) リアルタイム切替**: ナビ右上のスイッチで即座に多言語切り替え。
   - **ワイド・フルスクリーン対応**: 画面サイズに柔軟にフィットする左右対称な記事カードグリッド。
+
+---
+
+## 🔑 Gemini API キーの設定方法 (自分用)
+
+1. [Google AI Studio](https://aistudio.google.com/app/apikey) にアクセスし、無料枠の API キーを作成・コピーします。
+2. 本サイトの画面上部「**AI Summarizer**（要約ツール）」ページを開きます。
+3. 「**Gemini API Key Settings (BYOK)**」欄にキーを貼り付けて「**Save Key**（キーを保存）」をクリックします。
+4. これで準備完了です。以降、要約生成ボタンを押すとブラウザから直接 Gemini API が安全に呼び出されます。
+
+> **🔒 セキュリティに関する重要事項**:
+> - 入力した API キーはお使いの PC/ブラウザの `localStorage` にのみ保存されます。
+> - GitHub リポジトリ（Public）や Vercel にキーが公開・共有されることはありません。
+> - 不要になった際はいつでも「Clear Key（キーを削除）」ボタンで即座にストレージから消去できます。
 
 ---
 
@@ -50,12 +70,3 @@ npm run dev -- --host
 # プロダクションビルド
 npm run build
 ```
-
----
-
-## 🛠️ 技術スタック
-
-- **Core**: HTML5, Vanilla JavaScript (ES Modules), CSS (Vanilla + Design Tokens)
-- **Animation & Graphics**: GSAP (Timeline, SplitText), OGL (WebGL 2.0 Shader)
-- **Local AI**: `@mlc-ai/web-llm` (WebGPU / Web Worker)
-- **Build Tool**: Vite (MPA Architecture)

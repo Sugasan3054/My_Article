@@ -8,8 +8,8 @@
 export const translations = {
   en: {
     siteTitle: 'Tech Summary Hub',
-    siteSubtitle: 'Curated summaries of next-generation tech articles & developer talks. Powered by in-browser AI.',
-    siteDescription: 'A high-performance static knowledge hub covering modern AI, Web architecture, cloud security, and developer tools. Summaries are locally generated via in-browser WebGPU (WebLLM) with zero server costs and 100% privacy.',
+    siteSubtitle: 'Curated summaries of next-generation tech articles & developer talks. Powered by Gemini AI.',
+    siteDescription: 'A high-performance static knowledge hub covering modern AI, Web architecture, cloud security, and developer tools. Summaries are powered by Google Gemini API with zero server storage and 100% client-side privacy.',
     scrollDown: 'Scroll down to explore summaries',
     navArticles: 'Articles',
     navSummarizer: 'AI Summarizer',
@@ -32,17 +32,29 @@ export const translations = {
     
     // Card Nav 3項目
     cardNavAiTitle: 'AI & LLM',
-    cardNavAiDesc: 'Large language models, WebLLM, multimodal architectures, and local inference.',
+    cardNavAiDesc: 'Large language models, Gemini, multimodal architectures, and intelligent systems.',
     cardNavSecurityTitle: 'Security',
     cardNavSecurityDesc: 'Web application security, XSS prevention, zero-trust architectures, and privacy.',
     cardNavDevTitle: 'Development',
     cardNavDevDesc: 'WebGPU, modern frontend engineering, performance optimization, and system design.',
 
-    // Summarizer Tool
-    summarizerTitle: 'WebLLM Article Summarizer',
-    summarizerSubtitle: 'Run open-weight AI models locally inside your browser using WebGPU. Completely private with zero API costs.',
-    securityNoteTitle: 'Static Site Architecture:',
-    securityNoteBody: 'To maintain top security, no GitHub tokens are stored on the client. Generate your summary, download the Markdown file, and push it to your repository.',
+    // Gemini API & Summarizer Tool
+    summarizerTitle: 'Gemini AI Article Summarizer',
+    summarizerSubtitle: 'Fast, high-quality technical summaries powered by Google Gemini API. Completely client-side with zero server storage.',
+    apiKeySectionTitle: 'Gemini API Key Settings (BYOK)',
+    apiKeyLabel: 'Your Gemini API Key',
+    apiKeyPlaceholder: 'AIzaSy...',
+    apiKeyHelp: 'Get a free API key from Google AI Studio. Your key is stored exclusively in your browser localStorage and is never uploaded anywhere.',
+    apiKeySaveBtn: 'Save Key',
+    apiKeyClearBtn: 'Clear Key',
+    apiKeySavedStatus: 'API Key is configured and ready.',
+    apiKeyMissingStatus: 'No API Key configured. Please enter your key above.',
+    apiKeySavedAlert: 'API Key saved successfully in your local browser.',
+    apiKeyClearedAlert: 'API Key removed from browser storage.',
+    
+    securityNoteTitle: 'Zero-Leak Security & Cost Protection:',
+    securityNoteBody: 'Your API key is never exposed to GitHub or Vercel. A client-side rate limit (max 3 calls/min) and character guard prevent accidental overuse.',
+    
     section1Title: '1. Enter Content Details',
     labelContentType: 'Content Type',
     typeArticle: 'Web Article',
@@ -53,12 +65,12 @@ export const translations = {
     labelContentTextArticle: 'Article Text Content',
     labelContentTextVideo: 'YouTube Transcript Text',
     helpContentText: 'For YouTube videos, paste the transcript text copied from YouTube transcript viewer.',
-    labelModelSelect: 'WebLLM Model',
-    helpModelSelect: 'Initial run will cache the model weights inside your browser.',
-    btnGenerateAi: 'Generate AI Summary (WebLLM)',
-    btnQuickExtract: 'Quick Extract (Instant / No GPU)',
-    progressLoading: 'Downloading & preparing model weights...',
-    progressDone: 'Ready! Generating summary...',
+    labelModelSelect: 'Gemini Model',
+    helpModelSelect: 'Gemini 1.5 Flash is fast and included in the free tier of Google AI Studio.',
+    btnGenerateAi: 'Generate Summary (Gemini API)',
+    btnQuickExtract: 'Quick Extract (Instant / No API)',
+    progressLoading: 'Connecting to Gemini API...',
+    progressDone: 'Summary generated successfully!',
     
     section2Title: '2. Review & Edit Generated Summary',
     labelEditTitle: 'Article Title',
@@ -73,15 +85,12 @@ export const translations = {
     postDownloadSuccess: 'Markdown file downloaded successfully!',
     postDownloadStep1: 'Move the downloaded .md file into content/articles/',
     postDownloadStep2: 'Run `npm run build:index` in terminal to refresh index.',
-    postDownloadStep3: 'Commit and push changes to update GitHub Pages.',
-    
-    webgpuWarningTitle: 'WebGPU is not supported in this browser.',
-    webgpuWarningBody: 'To run in-browser WebLLM, please use the latest version of Chrome or Edge, or use the "Quick Extract" mode below.'
+    postDownloadStep3: 'Commit and push changes to update GitHub Pages / Vercel.'
   },
   ja: {
     siteTitle: 'Tech Summary Hub',
-    siteSubtitle: '次世代の技術記事・開発者セッションを厳選要約。ブラウザ内AIによるゼロサーバー要約ナレッジハブ。',
-    siteDescription: '最先端のAI、Webアーキテクチャ、セキュリティ、開発者向けツールを網羅したナレッジポータルです。ブラウザ内WebGPU（WebLLM）により外部APIコスト不要・完全プライベートに要約を生成・管理できます。',
+    siteSubtitle: '次世代の技術記事・開発者セッションを厳選要約。Gemini AIによるゼロサーバー要約ナレッジハブ。',
+    siteDescription: '最先端のAI、Webアーキテクチャ、セキュリティ、開発者向けツールを網羅したナレッジポータルです。Google Gemini APIにより高品質な要約を完全クライアントサイド（ゼロサーバー）で生成・管理できます。',
     scrollDown: 'スクロールして記事一覧を見る',
     navArticles: '記事一覧',
     navSummarizer: '要約ツール (自分用)',
@@ -104,17 +113,29 @@ export const translations = {
 
     // Card Nav 3項目
     cardNavAiTitle: 'AI',
-    cardNavAiDesc: '大規模言語モデル (LLM)、WebLLM、マルチモーダル、オンデバイス推論技術。',
+    cardNavAiDesc: '大規模言語モデル (LLM)、Gemini、マルチモーダル、インテリジェントシステム。',
     cardNavSecurityTitle: 'セキュリティ',
     cardNavSecurityDesc: 'Webアプリケーション脆弱性対策、XSSサニタイズ、ゼロトラスト、プライバシー設計。',
     cardNavDevTitle: '開発 (ソフトウェア)',
     cardNavDevDesc: 'WebGPU、モダンフロントエンド、パフォーマンス最適化、システム設計。',
 
-    // Summarizer Tool
-    summarizerTitle: 'WebLLM 要約作成ツール (自分専用)',
-    summarizerSubtitle: 'ブラウザ上でローカルLLM（WebGPU）を実行し、外部APIコスト不要・完全プライベートにMarkdown要約を生成します。',
-    securityNoteTitle: '静的サイト運用フロー:',
-    securityNoteBody: '静的サイトのセキュリティを維持するため、GitHub Token等の認証情報はフロントエンドに保持しません。要約生成後にMarkdownファイルをダウンロードし、リポジトリの content/articles/ に配置してコミットする運用です。',
+    // Gemini API & Summarizer Tool
+    summarizerTitle: 'Gemini AI 要約作成ツール (自分専用)',
+    summarizerSubtitle: 'Google Gemini API を活用し、長文の技術記事やYouTube動画から高品質なMarkdown要約を即座に生成します。',
+    apiKeySectionTitle: 'Gemini API Key 設定 (BYOK方式)',
+    apiKeyLabel: 'Gemini API キー',
+    apiKeyPlaceholder: 'AIzaSy...',
+    apiKeyHelp: 'Google AI Studioから無料枠のAPIキーを取得して入力してください。キーはお使いのブラウザ（localStorage）にのみ保存され、Gitや外部サーバーには一切送信されません。',
+    apiKeySaveBtn: 'キーを保存',
+    apiKeyClearBtn: 'キーを削除',
+    apiKeySavedStatus: 'APIキーが保存されています（準備完了）',
+    apiKeyMissingStatus: 'APIキーが設定されていません。上記から入力してください。',
+    apiKeySavedAlert: 'APIキーをブラウザ内に安全に保存しました。',
+    apiKeyClearedAlert: 'APIキーをブラウザから削除しました。',
+    
+    securityNoteTitle: '漏洩防止 & 不当課金ガードレール:',
+    securityNoteBody: 'APIキーはGitHubやVercelに一切保持されません。また、意図せぬ連続実行を防ぐレートリミット（最大3回/分）と入力文字数ガードが組み込まれています。',
+    
     section1Title: '1. 要約対象の情報を入力',
     labelContentType: 'コンテンツの種別',
     typeArticle: 'Web技術記事',
@@ -125,12 +146,12 @@ export const translations = {
     labelContentTextArticle: '記事の本文テキスト',
     labelContentTextVideo: 'YouTube 字幕テキスト',
     helpContentText: 'YouTube動画の場合は、YouTubeの「文字起こしを表示」からテキストをコピーして貼り付けてください。',
-    labelModelSelect: 'WebLLM モデル',
-    helpModelSelect: '初回実行時はブラウザ内にモデルのダウンロード（重みデータ）が行われます。',
-    btnGenerateAi: 'WebLLMでAI要約を生成',
-    btnQuickExtract: 'クイック抽出 (WebGPU不要・即時)',
-    progressLoading: 'モデルデータをダウンロード・初期化中...',
-    progressDone: 'モデルの準備が完了しました！要約を生成中...',
+    labelModelSelect: 'Gemini モデル',
+    helpModelSelect: 'Gemini 1.5 Flash は Google AI Studio の無料枠内で超高速に利用可能です。',
+    btnGenerateAi: 'Gemini APIで要約を生成',
+    btnQuickExtract: 'クイック抽出 (API不要・即時)',
+    progressLoading: 'Gemini API に接続中...',
+    progressDone: '要約の生成が完了しました！',
     
     section2Title: '2. 生成結果の確認 & 編集',
     labelEditTitle: '記事タイトル',
@@ -145,10 +166,7 @@ export const translations = {
     postDownloadSuccess: 'ファイルのダウンロードが完了しました！',
     postDownloadStep1: 'ダウンロードした .md ファイルを content/articles/ フォルダに配置します。',
     postDownloadStep2: 'ターミナルで `npm run build:index` を実行し、一覧データを更新します。',
-    postDownloadStep3: '変更をリポジトリにコミット＆プッシュすると、GitHub Pagesに反映されます。',
-    
-    webgpuWarningTitle: 'お使いのブラウザは WebGPU をサポートしていません。',
-    webgpuWarningBody: 'WebLLMを実行するには、WebGPUが有効化された最新の Chrome, Edge をご利用いただくか、下記の「クイック抽出モード」をご利用ください。'
+    postDownloadStep3: '変更をリポジトリにコミット＆プッシュすると、GitHub Pages / Vercelに反映されます。'
   }
 };
 

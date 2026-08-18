@@ -1,47 +1,23 @@
-import { CreateWebWorkerMLCEngine, CreateMLCEngine } from '@mlc-ai/web-llm';
 import { extractYouTubeId, slugify, renderMarkdown } from './utils.js';
 import { initAurora } from './aurora.js';
 import { i18n } from './i18n.js';
 import { CardNav } from './card-nav.js';
-
-// 推奨モデル定義 (軽量モデルを先頭に配置)
-const AVAILABLE_MODELS = [
-  {
-    id: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
-    name: 'Qwen2.5-0.5B (Ultra-light · ~350MB · Recommended)',
-    size: '~350 MB',
-  },
-  {
-    id: 'SmolLM2-360M-Instruct-q4f16_1-MLC',
-    name: 'SmolLM2-360M (Compact · ~200MB)',
-    size: '~200 MB',
-  },
-  {
-    id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
-    name: 'Llama-3.2-1B (Fast · ~800MB)',
-    size: '~800 MB',
-  },
-  {
-    id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
-    name: 'Qwen2.5-1.5B (Accurate · ~1.1GB)',
-    size: '~1.1 GB',
-  },
-];
+import { geminiService, GEMINI_MODELS } from './gemini.js';
 
 class SummarizerApp {
   constructor() {
-    this.engine = null;
-    this.worker = null;
-    this.currentModelId = AVAILABLE_MODELS[0].id;
+    this.currentModelId = GEMINI_MODELS[0].id;
     this.isGenerating = false;
-    this.isLoadingEngine = false;
-    this.hasWebGPU = false;
 
-    // DOM要素
-    this.webgpuWarning = document.getElementById('webgpu-warning');
+    // API Key 要素
+    this.apiKeyInput = document.getElementById('gemini-api-key-input');
+    this.btnToggleKeyVisibility = document.getElementById('btn-toggle-key-visibility');
+    this.btnSaveKey = document.getElementById('btn-save-key');
+    this.btnClearKey = document.getElementById('btn-clear-key');
+    this.apiKeyStatusBadge = document.getElementById('api-key-status-badge');
+
+    // フォーム要素
     this.sourceTypeInputs = document.querySelectorAll('input[name="source-type"]');
-    this.videoFields = document.getElementById('video-fields');
-    this.articleFields = document.getElementById('article-fields');
     this.modelSelect = document.getElementById('model-select');
     this.btnGenerate = document.getElementById('btn-generate');
     this.btnQuickExtract = document.getElementById('btn-quick-extract');
@@ -76,8 +52,8 @@ class SummarizerApp {
     i18n.init();
     new CardNav('.card-nav-container');
 
-    await this.checkWebGPUSupport();
     this.populateModelSelect();
+    this.setupApiKeyUI();
     this.setupEventListeners();
     this.setDefaultDate();
   }
@@ -89,43 +65,67 @@ class SummarizerApp {
     }
   }
 
-  async checkWebGPUSupport() {
-    if (!navigator.gpu) {
-      this.showWebGPUUnavailable(i18n.t('webgpuWarningBody'));
-      return;
-    }
-
-    try {
-      const adapter = await navigator.gpu.requestAdapter();
-      if (!adapter) {
-        this.showWebGPUUnavailable(i18n.t('webgpuWarningBody'));
-        return;
-      }
-      this.hasWebGPU = true;
-    } catch (e) {
-      this.showWebGPUUnavailable(`WebGPU initialization error: ${e.message}`);
-    }
-  }
-
-  showWebGPUUnavailable(message) {
-    this.hasWebGPU = false;
-    if (this.webgpuWarning) {
-      this.webgpuWarning.style.display = 'flex';
-      const p = this.webgpuWarning.querySelector('p');
-      if (p) p.textContent = message;
-    }
-    if (this.btnGenerate) {
-      this.btnGenerate.classList.remove('btn-primary');
-      this.btnGenerate.classList.add('btn-secondary');
-      this.btnGenerate.title = 'WebGPU unavailable. Please use Quick Extract.';
-    }
-  }
-
   populateModelSelect() {
     if (!this.modelSelect) return;
-    this.modelSelect.innerHTML = AVAILABLE_MODELS.map(
+    this.modelSelect.innerHTML = GEMINI_MODELS.map(
       (m) => `<option value="${m.id}">${m.name}</option>`
     ).join('');
+  }
+
+  setupApiKeyUI() {
+    this.updateApiKeyStatus();
+
+    if (this.btnSaveKey) {
+      this.btnSaveKey.addEventListener('click', () => {
+        const key = this.apiKeyInput?.value.trim() || '';
+        if (!key) {
+          alert(i18n.lang === 'ja' ? 'APIキーを入力してください。' : 'Please enter an API key.');
+          return;
+        }
+        geminiService.setApiKey(key);
+        this.updateApiKeyStatus();
+        alert(i18n.t('apiKeySavedAlert'));
+      });
+    }
+
+    if (this.btnClearKey) {
+      this.btnClearKey.addEventListener('click', () => {
+        geminiService.clearApiKey();
+        if (this.apiKeyInput) this.apiKeyInput.value = '';
+        this.updateApiKeyStatus();
+        alert(i18n.t('apiKeyClearedAlert'));
+      });
+    }
+
+    if (this.btnToggleKeyVisibility && this.apiKeyInput) {
+      this.btnToggleKeyVisibility.addEventListener('click', () => {
+        const isPass = this.apiKeyInput.type === 'password';
+        this.apiKeyInput.type = isPass ? 'text' : 'password';
+      });
+    }
+  }
+
+  updateApiKeyStatus() {
+    const hasKey = geminiService.hasApiKey();
+    const currentKey = geminiService.getApiKey();
+
+    if (this.apiKeyInput && currentKey && !this.apiKeyInput.value) {
+      this.apiKeyInput.value = currentKey;
+    }
+
+    if (this.apiKeyStatusBadge) {
+      if (hasKey) {
+        this.apiKeyStatusBadge.textContent = `✓ ${i18n.t('apiKeySavedStatus')}`;
+        this.apiKeyStatusBadge.className = 'tag-chip is-active';
+        this.apiKeyStatusBadge.style.color = '#3fb950';
+        this.apiKeyStatusBadge.style.borderColor = 'rgba(63, 185, 80, 0.4)';
+      } else {
+        this.apiKeyStatusBadge.textContent = `⚠ ${i18n.t('apiKeyMissingStatus')}`;
+        this.apiKeyStatusBadge.className = 'tag-chip';
+        this.apiKeyStatusBadge.style.color = 'var(--color-text-muted)';
+        this.apiKeyStatusBadge.style.borderColor = 'var(--color-border)';
+      }
+    }
   }
 
   setupEventListeners() {
@@ -133,8 +133,6 @@ class SummarizerApp {
       radio.addEventListener('change', (e) => {
         const type = e.target.value;
         const isVideo = type === 'video';
-        if (this.videoFields) this.videoFields.style.display = isVideo ? 'block' : 'none';
-        if (this.articleFields) this.articleFields.style.display = isVideo ? 'none' : 'block';
 
         const contentLabel = document.getElementById('content-label');
         if (contentLabel) {
@@ -146,7 +144,6 @@ class SummarizerApp {
     if (this.modelSelect) {
       this.modelSelect.addEventListener('change', (e) => {
         this.currentModelId = e.target.value;
-        this.destroyEngine();
       });
     }
 
@@ -184,50 +181,6 @@ class SummarizerApp {
     }
   }
 
-  destroyEngine() {
-    if (this.worker) {
-      this.worker.terminate();
-      this.worker = null;
-    }
-    this.engine = null;
-  }
-
-  async initEngine() {
-    if (this.engine) return this.engine;
-
-    this.isLoadingEngine = true;
-    this.showProgress(0, i18n.t('progressLoading'));
-
-    const initProgressCallback = (report) => {
-      const progress = Math.round(report.progress * 100);
-      const text = report.text || 'Loading model weights...';
-      this.showProgress(progress, text);
-    };
-
-    try {
-      if (typeof Worker !== 'undefined') {
-        this.worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
-        this.engine = await CreateWebWorkerMLCEngine(this.worker, this.currentModelId, {
-          initProgressCallback,
-        });
-      } else {
-        this.engine = await CreateMLCEngine(this.currentModelId, {
-          initProgressCallback,
-        });
-      }
-
-      this.showProgress(100, i18n.t('progressDone'));
-      return this.engine;
-    } catch (err) {
-      console.error('Failed to load WebLLM model:', err);
-      this.showProgress(0, `Model load error: ${err.message}`, true);
-      this.destroyEngine();
-      throw err;
-    } finally {
-      this.isLoadingEngine = false;
-    }
-  }
-
   showProgress(percent, text, isError = false) {
     if (!this.progressSection) return;
     this.progressSection.style.display = 'block';
@@ -246,18 +199,23 @@ class SummarizerApp {
       return;
     }
 
+    if (!geminiService.hasApiKey()) {
+      alert(i18n.lang === 'ja' ? 'Gemini APIキーが設定されていません。上の設定欄にAPIキーを入力して「保存」してください。' : 'Gemini API key is not configured. Please enter and save your key above.');
+      this.apiKeyInput?.focus();
+      return;
+    }
+
     const sourceType = document.querySelector('input[name="source-type"]:checked')?.value || 'article';
     const sourceUrl = (this.sourceUrlInput?.value || '').trim();
     const sourceTitle = (this.sourceTitleInput?.value || '').trim();
+    const isJa = i18n.lang === 'ja';
 
     this.isGenerating = true;
     if (this.btnGenerate) this.btnGenerate.disabled = true;
     if (this.btnQuickExtract) this.btnQuickExtract.disabled = true;
 
     try {
-      const engine = await this.initEngine();
-
-      this.showProgress(100, i18n.lang === 'ja' ? 'AIが要約テキストをリアルタイム生成中...' : 'AI is generating summary in real-time...');
+      this.showProgress(50, isJa ? 'Gemini API に接続中...' : 'Connecting to Gemini API...');
 
       if (this.previewSection) {
         this.previewSection.style.display = 'block';
@@ -265,83 +223,79 @@ class SummarizerApp {
       }
       if (this.editBody) this.editBody.value = '';
 
-      const isJa = i18n.lang === 'ja';
-      const systemPrompt = isJa
-        ? `あなたは優秀な技術コミュニケーターです。入力された技術記事または動画の字幕テキストを読み込み、以下のフォーマットの日本語Markdownで要約を作成してください。
+      const systemInstruction = isJa
+        ? `あなたは高度な技術リサーチ力を持つシニアテクニカルライターです。入力された技術記事や動画字幕を深く読み解き、以下の厳格なフォーマットに従ってプロフェッショナルな日本語Markdown要約を生成してください。
 
-必ず以下の構成で出力してください:
-# 記事のタイトル（簡潔で魅力的なタイトル）
-TAGS: [カンマ区切りの技術タグ3〜5個]
+フォーマット要件:
+# 記事のタイトル（魅力的で具体的）
+TAGS: [3〜5個の技術タグ、カンマ区切り]
 SUMMARY: [一覧カード用の2〜3行の簡潔な要約]
 
 ## 概要
-（主要なポイントと背景を3〜4行で整理）
+（背景とコアとなる課題解決を3〜4行で整理）
 
 ## 主なポイント
-- 箇条書きで重要な論点を解説
+- 箇条書きで重要な論点を深く解説
 - 技術的メリットや注意点
 
-## 技術的詳細
-（必要に応じてコードや仕組み、アーキテクチャの解説）
+## 技術的詳細・アーキテクチャ
+（コード例、仕組み、データフロー、設計思想）
 
-## まとめ
-（今後の展望や実務での活用指針）`
-        : `You are an expert technical communicator. Given the following technical article or video transcript, generate a structured summary in Markdown format with the following template:
+## まとめ・実務への示唆
+（今後の展望や開発者が今すぐ活用できるポイント）`
+        : `You are an expert senior technical writer. Read the provided article text or video transcript and generate a structured, professional Markdown summary following this exact format:
 
-# Article Title (Engaging & concise title)
-TAGS: [Comma-separated 3-5 technical tags]
+# Article Title (Engaging & specific)
+TAGS: [3-5 technical tags, comma-separated]
 SUMMARY: [2-3 line concise summary for card view]
 
 ## Overview
-(3-4 sentences summarizing background & purpose)
+(3-4 sentences explaining background & core problem solved)
 
 ## Key Takeaways
-- Key technical point 1
-- Key architectural insight 2
-- Performance / developer benefits
+- Deep explanation of key points
+- Performance, architectural, or DX benefits
 
-## Technical Details
-(Architecture, implementation patterns, code concepts)
+## Technical Details & Architecture
+(Mechanism, code patterns, data flow, or system design)
 
-## Summary & Future Outlook
-(Next steps, takeaways for developers)`;
+## Summary & Actionable Insights
+(Future outlook and takeaways for developers)`;
 
-      const userPrompt = isJa
-        ? `【コンテンツ種別】: ${sourceType === 'video' ? 'YouTube動画字幕' : '技術記事'}
+      const prompt = isJa
+        ? `【種別】: ${sourceType === 'video' ? 'YouTube動画字幕' : '技術記事'}
 【元タイトル】: ${sourceTitle || '未指定'}
 【元URL】: ${sourceUrl || '未指定'}
 【本文テキスト】:
-${rawContent.slice(0, 5000)}`
+${rawContent}`
         : `[Content Type]: ${sourceType === 'video' ? 'YouTube Transcript' : 'Tech Article'}
 [Original Title]: ${sourceTitle || 'Untitled'}
 [Original URL]: ${sourceUrl || 'N/A'}
 [Text Content]:
-${rawContent.slice(0, 5000)}`;
+${rawContent}`;
 
-      const chunks = await engine.chat.completions.create({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.3,
-        stream: true,
-      });
-
-      let fullResponse = '';
-      for await (const chunk of chunks) {
-        const delta = chunk.choices[0]?.delta?.content || '';
-        fullResponse += delta;
-        if (this.editBody) {
-          this.editBody.value = fullResponse;
-          this.updateMarkdownPreview();
+      let streamedText = '';
+      const fullResponse = await geminiService.generateSummaryStream(
+        {
+          model: this.currentModelId,
+          systemInstruction,
+          prompt,
+        },
+        (chunk, currentFull) => {
+          streamedText = currentFull;
+          if (this.editBody) {
+            this.editBody.value = streamedText;
+            this.updateMarkdownPreview();
+          }
         }
-      }
+      );
 
       this.parseAndPopulateResult(fullResponse, sourceType, sourceUrl, sourceTitle);
-      this.showProgress(100, isJa ? '要約の生成が完了しました！' : 'Summary generated successfully!');
+      this.showProgress(100, isJa ? 'Geminiによる要約が完了しました！' : 'Gemini summary generated successfully!');
     } catch (err) {
       console.error('Generation failed:', err);
-      alert(`Error during summary generation: ${err.message}\n\nPlease try the "Quick Extract" button if WebGPU is unavailable.`);
+      alert(`Error during summary generation: ${err.message}`);
+      this.showProgress(0, `Error: ${err.message}`, true);
     } finally {
       this.isGenerating = false;
       if (this.btnGenerate) this.btnGenerate.disabled = false;
@@ -403,7 +357,7 @@ ${sentences.slice(8, 15).join('.\n\n') || rawContent.slice(0, 500)}
 This article outlines key technical concepts and insights. Please refer to the original source link for complete details.`;
 
     if (this.editTitle) this.editTitle.value = title;
-    if (this.editTags) this.editTags.value = isJa ? 'Web技術, アーキテクチャ, AI' : 'Web, AI, Architecture';
+    if (this.editTags) this.editTags.value = isJa ? 'AI, アーキテクチャ, 開発' : 'AI, Architecture, Development';
     if (this.editSlug) this.editSlug.value = slugify(title);
     if (this.editSummary) this.editSummary.value = summary.slice(0, 150);
     if (this.editBody) this.editBody.value = generatedBody;
@@ -476,14 +430,14 @@ This article outlines key technical concepts and insights. Please refer to the o
     const body = (this.editBody?.value || '').trim();
 
     const frontMatter = `---
-title: ${title}
+title: "${title.replace(/"/g, '\\"')}"
 date: ${date}
 tags: [${tags.join(', ')}]
 source_url: ${sourceUrl}
 source_type: ${sourceType}
-source_title: ${sourceTitle || title}
+source_title: "${(sourceTitle || title).replace(/"/g, '\\"')}"
 video_id: "${videoId}"
-summary: ${summary}
+summary: "${summary.replace(/"/g, '\\"')}"
 ---
 
 ${body}
