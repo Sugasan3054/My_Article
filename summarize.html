@@ -1,48 +1,103 @@
 <!DOCTYPE html>
-<html lang="ja" class="dark">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
-  <title>要約作成ツール (WebLLM) | Tech Article Summaries</title>
-  <meta name="description" content="ブラウザ内WebLLMを活用して技術記事やYouTube動画からMarkdown要約を自動生成する自分専用ツール。">
+  <title>AI Summarizer | Tech Summary Hub</title>
+  <meta name="description" content="In-browser WebLLM AI summarizer for articles and YouTube transcripts.">
   <link rel="stylesheet" href="./src/css/base.css">
   <link rel="stylesheet" href="./src/css/components.css">
+  <link rel="stylesheet" href="./src/css/card-nav.css">
 </head>
 <body>
   <!-- Aurora WebGL アニメーション背景 -->
   <div id="aurora-bg" class="aurora-background" aria-hidden="true"></div>
 
   <!-- スキップリンク -->
-  <a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
+  <a href="#main-content" class="skip-link" data-i18n="skipLink">Skip to main content</a>
 
-  <!-- ヘッダー -->
-  <header class="site-header">
-    <div class="site-container site-header-inner">
-      <a href="./index.html" class="site-logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-        </svg>
-        <span>Tech Summary Hub</span>
-      </a>
+  <!-- Card Nav ヘッダー -->
+  <header class="site-header" style="background: transparent; border: none; padding-top: var(--space-4);">
+    <div class="site-container">
+      <div class="card-nav-container card-nav-wrapper">
+        <nav class="card-nav" aria-label="Main Navigation">
+          <div class="card-nav-top">
+            <button type="button" class="card-nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+              <span class="card-nav-hamburger-line"></span>
+              <span class="card-nav-hamburger-line"></span>
+            </button>
 
-      <nav aria-label="主要ナビゲーション">
-        <ul class="site-nav-list">
-          <li>
-            <a href="./index.html" class="site-nav-link">記事一覧</a>
-          </li>
-          <li>
-            <a href="./summarize.html" class="site-nav-link" aria-current="page">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            <a href="./index.html" class="card-nav-logo">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
               </svg>
-              <span>要約ツール (自分用)</span>
+              <span>Tech Summary Hub</span>
             </a>
-          </li>
-        </ul>
-      </nav>
+
+            <div class="card-nav-actions">
+              <a href="./index.html" class="card-nav-cta" data-i18n="navArticles">
+                <span>Articles</span>
+              </a>
+
+              <div class="lang-switch-wrapper" title="Switch Language (EN / JA)">
+                <span id="lang-switch-label" aria-hidden="true">EN</span>
+                <label class="lang-switch" aria-label="Toggle Language (English / Japanese)">
+                  <input type="checkbox" id="lang-toggle-checkbox">
+                  <span class="lang-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-nav-content" aria-hidden="true">
+            <div class="nav-card">
+              <div class="nav-card-label" data-i18n="cardNavTopicsTitle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>Popular Topics</span>
+              </div>
+              <div class="nav-card-links">
+                <a href="./index.html" class="nav-card-link"><span>→ All Articles</span></a>
+              </div>
+            </div>
+
+            <div class="nav-card">
+              <div class="nav-card-label" data-i18n="cardNavToolsTitle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="13 2 13 9 20 9"></polyline>
+                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                </svg>
+                <span>Quick Actions</span>
+              </div>
+              <div class="nav-card-links">
+                <a href="./index.html" class="nav-card-link" data-i18n="navArticles">
+                  <span>→ View Article List</span>
+                </a>
+                <a href="https://github.com/Sugasan3054/My_Article" target="_blank" rel="noopener noreferrer" class="nav-card-link" data-i18n="cardNavActionGh">
+                  <span>→ GitHub Repository</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="nav-card">
+              <div class="nav-card-label" data-i18n="cardNavAboutTitle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Platform</span>
+              </div>
+              <p class="nav-card-desc" data-i18n="cardNavAboutDesc">
+                Privacy-first tech knowledge repository with zero-server AI summarization.
+              </p>
+            </div>
+          </div>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -50,9 +105,9 @@
   <main id="main-content" class="site-main">
     <div class="site-container">
       <header style="margin-bottom: var(--space-6);">
-        <h1>WebLLM 要約作成ツール (自分専用)</h1>
-        <p style="color: var(--color-text-muted); font-size: var(--font-size-lg);">
-          ブラウザ上でローカルLLM（WebGPU）を実行し、外部APIコスト不要・完全プライベートにMarkdown要約を生成します。
+        <h1 data-i18n="summarizerTitle">WebLLM Article Summarizer</h1>
+        <p style="color: var(--color-text-muted); font-size: var(--font-size-lg);" data-i18n="summarizerSubtitle">
+          Run open-weight AI models locally inside your browser using WebGPU. Completely private with zero API costs.
         </p>
       </header>
 
@@ -64,9 +119,9 @@
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
         </svg>
         <div>
-          <strong>お使いのブラウザは WebGPU をサポートしていません。</strong>
-          <p style="margin-top: var(--space-2); margin-bottom: 0;">
-            WebLLMを実行するには、WebGPUが有効化された最新の Chrome, Edge, または Firefox (Nightly) をご利用ください。
+          <strong data-i18n="webgpuWarningTitle">WebGPU is not supported in this browser.</strong>
+          <p style="margin-top: var(--space-2); margin-bottom: 0;" data-i18n="webgpuWarningBody">
+            To run in-browser WebLLM, please use the latest version of Chrome or Edge, or use the "Quick Extract" mode below.
           </p>
         </div>
       </div>
@@ -79,33 +134,33 @@
           <line x1="12" y1="8" x2="12.01" y2="8"></line>
         </svg>
         <div>
-          <strong>静的サイト運用フロー:</strong>
-          <p style="margin-top: 4px; margin-bottom: 0;">
-            静的サイトのセキュリティを維持するため、GitHub Token等の認証情報はフロントエンドに保持しません。要約生成後に**Markdownファイルをダウンロード**し、リポジトリの <code>content/articles/</code> に配置してコミットする運用です。
+          <strong data-i18n="securityNoteTitle">Static Site Architecture:</strong>
+          <p style="margin-top: 4px; margin-bottom: 0;" data-i18n="securityNoteBody">
+            To maintain top security, no GitHub tokens are stored on the client. Generate your summary, download the Markdown file, and push it to your repository.
           </p>
         </div>
       </div>
 
       <!-- 入力フォーム -->
-      <section aria-label="要約対象の入力" style="background-color: var(--color-bg-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8); box-shadow: var(--shadow-sm);">
-        <h2 style="margin-top: 0; margin-bottom: var(--space-6);">1. 要約対象の情報を入力</h2>
+      <section aria-label="Input content to summarize" style="background-color: var(--color-bg-surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8); box-shadow: var(--shadow-sm);">
+        <h2 style="margin-top: 0; margin-bottom: var(--space-6);" data-i18n="section1Title">1. Enter Content Details</h2>
 
         <!-- 種別選択 -->
         <fieldset class="form-group" style="border: none; padding: 0;">
-          <legend class="form-label">コンテンツの種別</legend>
+          <legend class="form-label" data-i18n="labelContentType">Content Type</legend>
           <div style="display: flex; gap: var(--space-6); align-items: center; min-height: 44px;">
             <label style="display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;">
               <input type="radio" name="source-type" value="article" checked style="width: 20px; height: 20px;">
               <span style="display: inline-flex; align-items: center; gap: 4px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                <span>Web技術記事</span>
+                <span data-i18n="typeArticle">Web Article</span>
               </span>
             </label>
             <label style="display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;">
               <input type="radio" name="source-type" value="video" style="width: 20px; height: 20px;">
               <span style="display: inline-flex; align-items: center; gap: 4px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-                <span>YouTube動画</span>
+                <span data-i18n="typeVideo">YouTube Video</span>
               </span>
             </label>
           </div>
@@ -113,55 +168,55 @@
 
         <!-- 元URL -->
         <div class="form-group">
-          <label for="source-url" class="form-label">出典URL</label>
-          <input type="url" id="source-url" class="form-input" placeholder="https://example.com/article または https://www.youtube.com/watch?v=...">
-          <p class="form-help">記事のURLまたはYouTube動画のURLを入力してください。</p>
+          <label for="source-url" class="form-label" data-i18n="labelSourceUrl">Source URL</label>
+          <input type="url" id="source-url" class="form-input" placeholder="https://example.com/article or https://www.youtube.com/watch?v=...">
+          <p class="form-help" data-i18n="helpSourceUrl">Enter the original article or YouTube URL.</p>
         </div>
 
         <!-- 元タイトル -->
         <div class="form-group">
-          <label for="source-title" class="form-label">元の記事/動画タイトル (任意)</label>
-          <input type="text" id="source-title" class="form-input" placeholder="元記事のタイトル">
+          <label for="source-title" class="form-label" data-i18n="labelSourceTitle">Original Title (Optional)</label>
+          <input type="text" id="source-title" class="form-input" placeholder="Original title">
         </div>
 
         <!-- 本文または字幕テキスト -->
         <div class="form-group">
-          <label for="source-content" class="form-label" id="content-label">記事の本文テキスト</label>
-          <textarea id="source-content" class="form-textarea" rows="10" placeholder="記事の本文、またはYouTube動画からコピーした字幕テキストをここに貼り付けてください..."></textarea>
-          <p class="form-help">YouTube動画の場合は、YouTubeの「文字起こしを表示」からテキストをコピーして貼り付けてください。</p>
+          <label for="source-content" class="form-label" id="content-label" data-i18n="labelContentTextArticle">Article Text Content</label>
+          <textarea id="source-content" class="form-textarea" rows="10" placeholder="Paste article text or YouTube transcript text here..."></textarea>
+          <p class="form-help" data-i18n="helpContentText">For YouTube videos, paste the transcript text copied from YouTube transcript viewer.</p>
         </div>
 
         <!-- 使用モデル選択 -->
         <div class="form-group" style="max-width: 480px;">
-          <label for="model-select" class="form-label">WebLLM モデル</label>
+          <label for="model-select" class="form-label" data-i18n="labelModelSelect">WebLLM Model</label>
           <select id="model-select" class="form-select" style="width: 100%;">
             <!-- JSで動的生成 -->
           </select>
-          <p class="form-help">※ 初回実行時はブラウザ内にモデルのダウンロード（重みデータ）が行われます。</p>
+          <p class="form-help" data-i18n="helpModelSelect">Initial run will cache the model weights inside your browser.</p>
         </div>
 
         <!-- 生成ボタンエリア -->
         <div style="display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-6);">
-          <button type="button" id="btn-generate" class="btn btn-primary" style="font-size: var(--font-size-lg); padding: var(--space-3) var(--space-6);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <button type="button" id="btn-generate" class="btn btn-primary" style="font-size: var(--font-size-base); padding: var(--space-3) var(--space-6);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 20h9"></path>
               <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
             </svg>
-            <span>WebLLMでAI要約を生成</span>
+            <span data-i18n="btnGenerateAi">Generate AI Summary (WebLLM)</span>
           </button>
 
           <button type="button" id="btn-quick-extract" class="btn btn-secondary" style="font-size: var(--font-size-base); padding: var(--space-3) var(--space-6);" title="WebGPUを使わず即座に重要文からMarkdownドラフトを作成します">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            <span>クイック抽出 (WebGPU不要・即時)</span>
+            <span data-i18n="btnQuickExtract">Quick Extract (Instant / No GPU)</span>
           </button>
         </div>
 
         <!-- 進捗セクション (aria-live) -->
         <div id="progress-section" class="progress-container" style="display: none; margin-top: var(--space-6);" aria-live="polite">
           <div class="progress-label-row">
-            <span id="progress-status">モデルをロード中...</span>
+            <span id="progress-status" data-i18n="progressLoading">Downloading & preparing model weights...</span>
             <span id="progress-percent">0%</span>
           </div>
           <div class="progress-bar-track">
@@ -171,57 +226,49 @@
       </section>
 
       <!-- プレビュー & 編集セクション -->
-      <section id="preview-section" style="display: none; background-color: var(--color-bg-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8); box-shadow: var(--shadow-sm);" aria-label="生成結果の編集とプレビュー">
-        <h2 style="margin-top: 0; margin-bottom: var(--space-6);">2. 生成結果の確認 & 編集</h2>
+      <section id="preview-section" style="display: none; background-color: var(--color-bg-surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8); box-shadow: var(--shadow-sm);" aria-label="Review and edit generated summary">
+        <h2 style="margin-top: 0; margin-bottom: var(--space-6);" data-i18n="section2Title">2. Review & Edit Generated Summary</h2>
 
         <div style="display: grid; grid-template-columns: 1fr; gap: var(--space-4);">
-          <!-- タイトル編集 -->
           <div class="form-group">
-            <label for="edit-title" class="form-label">記事タイトル</label>
+            <label for="edit-title" class="form-label" data-i18n="labelEditTitle">Article Title</label>
             <input type="text" id="edit-title" class="form-input">
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
-            <!-- 公開日 -->
             <div class="form-group">
-              <label for="edit-date" class="form-label">日付 (YYYY-MM-DD)</label>
+              <label for="edit-date" class="form-label" data-i18n="labelEditDate">Publish Date</label>
               <input type="date" id="edit-date" class="form-input">
             </div>
 
-            <!-- スラッグ -->
             <div class="form-group">
-              <label for="edit-slug" class="form-label">ファイル名スラッグ</label>
+              <label for="edit-slug" class="form-label" data-i18n="labelEditSlug">Filename Slug</label>
               <input type="text" id="edit-slug" class="form-input">
             </div>
           </div>
 
-          <!-- タグ -->
           <div class="form-group">
-            <label for="edit-tags" class="form-label">タグ (カンマ区切り)</label>
-            <input type="text" id="edit-tags" class="form-input" placeholder="AI, WebGPU, アーキテクチャ">
+            <label for="edit-tags" class="form-label" data-i18n="labelEditTags">Tags (Comma-separated)</label>
+            <input type="text" id="edit-tags" class="form-input" placeholder="AI, WebGPU, Architecture">
           </div>
 
-          <!-- カード用短い要約 -->
           <div class="form-group">
-            <label for="edit-summary" class="form-label">カード表示用要約 (2〜3行)</label>
+            <label for="edit-summary" class="form-label" data-i18n="labelEditSummary">Short Card Summary (2-3 lines)</label>
             <textarea id="edit-summary" class="form-textarea" rows="3"></textarea>
           </div>
 
-          <!-- 要約本文 (Markdown) -->
           <div class="form-group">
-            <label for="edit-body" class="form-label">要約本文 (Markdown)</label>
+            <label for="edit-body" class="form-label" data-i18n="labelEditBody">Summary Body (Markdown)</label>
             <textarea id="edit-body" class="form-textarea" rows="12" style="font-family: var(--font-family-mono);"></textarea>
           </div>
         </div>
 
-        <!-- リアルタイムプレビュー -->
         <div style="margin-top: var(--space-6);">
-          <h3 style="font-size: var(--font-size-base); font-weight: 700; margin-bottom: var(--space-2);">本文プレビュー:</h3>
+          <h3 style="font-size: var(--font-size-base); font-weight: 700; margin-bottom: var(--space-2);" data-i18n="previewTitle">Live Markdown Preview:</h3>
           <div id="markdown-preview-render" class="markdown-body" style="border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-6); background-color: var(--color-bg-body);">
           </div>
         </div>
 
-        <!-- ダウンロード & コピーアクション -->
         <div style="display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-8);">
           <button type="button" id="btn-download" class="btn btn-primary">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -229,7 +276,7 @@
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            <span>Markdownファイルをダウンロード</span>
+            <span data-i18n="btnDownloadMd">Download Markdown File</span>
           </button>
 
           <button type="button" id="btn-copy" class="btn btn-secondary">
@@ -237,22 +284,21 @@
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            <span>全文をクリップボードにコピー</span>
+            <span data-i18n="btnCopyMd">Copy Full Markdown</span>
           </button>
         </div>
 
-        <!-- ダウンロード後のリポジトリ追加手順案内 -->
         <div id="post-download-guide" class="alert alert-success" style="display: none; margin-top: var(--space-6);" role="status">
           <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
           <div>
-            <strong>ファイルのダウンロードが完了しました！</strong>
+            <strong data-i18n="postDownloadSuccess">Markdown file downloaded successfully!</strong>
             <ol style="margin-top: var(--space-2); margin-bottom: 0; padding-left: var(--space-4);">
-              <li>ダウンロードした <code>.md</code> ファイルを <code>content/articles/</code> フォルダに配置します。</li>
-              <li>ターミナルで <code>npm run build:index</code> を実行し、一覧データを更新します。</li>
-              <li>変更をリポジトリにコミット＆プッシュすると、GitHub Pagesに反映されます。</li>
+              <li data-i18n="postDownloadStep1">Move the downloaded .md file into content/articles/</li>
+              <li data-i18n="postDownloadStep2">Run `npm run build:index` in terminal to refresh index.</li>
+              <li data-i18n="postDownloadStep3">Commit and push changes to update GitHub Pages.</li>
             </ol>
           </div>
         </div>
@@ -260,14 +306,13 @@
     </div>
   </main>
 
-  <!-- フッター -->
   <footer class="site-footer">
     <div class="site-container site-footer-inner">
       <div>
-        <p><strong>Tech Summary Hub</strong> - GitHub Pagesでホスティングされた静的ナレッジベース</p>
+        <p><strong>Tech Summary Hub</strong> - Privacy-first static knowledge hub</p>
       </div>
       <div>
-        <a href="./index.html">← 記事一覧に戻る</a>
+        <a href="./index.html" data-i18n="backToArticles">← Back to Articles</a>
       </div>
     </div>
   </footer>

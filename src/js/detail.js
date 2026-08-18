@@ -1,5 +1,7 @@
 import { renderMarkdown, parseFrontMatter, formatDate, extractYouTubeId } from './utils.js';
 import { initAurora } from './aurora.js';
+import { i18n } from './i18n.js';
+import { CardNav } from './card-nav.js';
 
 class ArticleDetailManager {
   constructor() {
@@ -21,8 +23,17 @@ class ArticleDetailManager {
   }
 
   async init() {
+    // i18n 初期化
+    i18n.init();
+    i18n.onLanguageChange(() => {
+      this.renderArticle();
+    });
+
+    // CardNav 初期化
+    new CardNav('.card-nav-container');
+
     if (!this.slug) {
-      this.renderError('記事が指定されていません。トップページから記事を選択してください。');
+      this.renderError('No article specified. Please select an article from the home page.');
       return;
     }
 
@@ -32,7 +43,7 @@ class ArticleDetailManager {
       this.renderArticle();
     } catch (err) {
       console.error('Failed to load article:', err);
-      this.renderError('記事の読み込みに失敗しました。ファイルが存在しないか、URLが正しくありません。');
+      this.renderError('Failed to load article content. The file might not exist or the URL is invalid.');
     }
   }
 
@@ -43,10 +54,8 @@ class ArticleDetailManager {
         const data = await res.json();
         this.allArticles = data.articles || [];
 
-        // 現在の記事インデックスと前後記事を特定 (最新順に並んでいる前提)
         const currentIndex = this.allArticles.findIndex((a) => a.slug === this.slug);
         if (currentIndex !== -1) {
-          // 日付降順なので、インデックスが小さい方が「次の新しい記事」、大きい方が「前の古い記事」
           this.nextArticle = currentIndex > 0 ? this.allArticles[currentIndex - 1] : null;
           this.prevArticle = currentIndex < this.allArticles.length - 1 ? this.allArticles[currentIndex + 1] : null;
         }
@@ -74,8 +83,8 @@ class ArticleDetailManager {
     if (this.container) {
       this.container.innerHTML = `
         <div class="alert alert-error" role="alert">
-          <p><strong>エラー:</strong> ${message}</p>
-          <p style="margin-top: 1rem;"><a href="./index.html" class="btn btn-secondary">トップページへ戻る</a></p>
+          <p><strong>Error:</strong> ${message}</p>
+          <p style="margin-top: 1rem;"><a href="./index.html" class="btn btn-secondary">← Back to Articles</a></p>
         </div>
       `;
     }
@@ -96,33 +105,27 @@ class ArticleDetailManager {
       body = '',
     } = this.articleData;
 
-    // ドキュメントタイトルの更新
-    document.title = `${title} | 技術記事要約サイト`;
+    document.title = `${title} | Tech Summary Hub`;
 
-    // パンくずリスト更新
     const breadcrumbTitle = document.getElementById('breadcrumb-title');
     if (breadcrumbTitle) {
       breadcrumbTitle.textContent = title;
     }
 
-    const formattedDate = formatDate(date);
+    const formattedDate = formatDate(date, i18n.lang);
     const isVideo = source_type === 'video';
     const sourceBadgeClass = isVideo ? 'video' : 'article';
-    const sourceBadgeLabel = isVideo ? '動画' : '記事';
+    const sourceBadgeLabel = isVideo ? i18n.t('sourceLabelVideo') : i18n.t('sourceLabelArticle');
 
-    // YouTube動画IDの判定 (FrontMatterのvideo_id優先、なければsource_urlから抽出)
     const ytId = video_id || extractYouTubeId(source_url);
 
-    // タグHTML
     const tagsHtml = (Array.isArray(tags) ? tags : [tags])
       .filter(Boolean)
       .map((t) => `<span class="tag-chip">#${t}</span>`)
       .join(' ');
 
-    // 本文のMarkdownパース
     const parsedBodyHtml = renderMarkdown(body);
 
-    // 一時DOMを作って見出しをスキャンし目次を作成
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = parsedBodyHtml;
     const headings = tempDiv.querySelectorAll('h2, h3');
@@ -133,7 +136,7 @@ class ArticleDetailManager {
       headings.forEach((h, index) => {
         const headingText = h.textContent;
         const headingId = `heading-${index}`;
-        h.setAttribute('id', headingId); // 本文側に見出しIDを付与
+        h.setAttribute('id', headingId);
 
         const levelClass = h.tagName.toLowerCase() === 'h3' ? 'toc-level-3' : 'toc-level-2';
         tocItems += `
@@ -144,7 +147,7 @@ class ArticleDetailManager {
       });
 
       tocHtml = `
-        <nav class="toc-card" aria-label="記事の目次">
+        <nav class="toc-card" aria-label="Table of contents">
           <div class="toc-title">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -154,7 +157,7 @@ class ArticleDetailManager {
               <line x1="3" y1="12" x2="3.01" y2="12"></line>
               <line x1="3" y1="18" x2="3.01" y2="18"></line>
             </svg>
-            <span>目次</span>
+            <span>${i18n.t('tocTitle')}</span>
           </div>
           <ol class="toc-list">
             ${tocItems}
@@ -163,11 +166,10 @@ class ArticleDetailManager {
       `;
     }
 
-    // YouTube 埋め込みプレイヤー (youtube-nocookie.com + loading="lazy")
     let videoEmbedHtml = '';
     if (isVideo && ytId) {
       videoEmbedHtml = `
-        <div class="video-embed-container" aria-label="YouTube動画プレイヤー">
+        <div class="video-embed-container" aria-label="YouTube video player">
           <iframe
             src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytId)}"
             title="${escapeHtml(source_title || title)}"
@@ -179,16 +181,15 @@ class ArticleDetailManager {
       `;
     }
 
-    // 出典元リンク
     let sourceLinkHtml = '';
     if (source_url) {
       sourceLinkHtml = `
         <div class="alert alert-info" style="margin-top: var(--space-6);">
           <div>
-            <strong>出典元 (${sourceBadgeLabel}): </strong>
+            <strong>${i18n.t('sourceLinkPrefix')} (${sourceBadgeLabel}): </strong>
             <a href="${escapeHtml(source_url)}" class="external-link" target="_blank" rel="noopener noreferrer">
               <span>${escapeHtml(source_title || source_url)}</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="（新しいタブで開く外部リンク）">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="${i18n.t('externalLinkAria')}">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                 <polyline points="15 3 21 3 21 9"></polyline>
                 <line x1="10" y1="14" x2="21" y2="3"></line>
@@ -199,16 +200,15 @@ class ArticleDetailManager {
       `;
     }
 
-    // 前後の記事ナビゲーション
     let postNavHtml = '';
     if (this.prevArticle || this.nextArticle) {
       postNavHtml = `
-        <nav class="post-navigation" aria-label="前後の記事">
+        <nav class="post-navigation" aria-label="Adjacent articles">
           ${
             this.prevArticle
               ? `
             <a href="./article.html?id=${encodeURIComponent(this.prevArticle.slug)}" class="post-nav-card post-nav-prev">
-              <span class="post-nav-label">← 前の記事</span>
+              <span class="post-nav-label">← ${i18n.t('prevArticle')}</span>
               <span class="post-nav-title">${escapeHtml(this.prevArticle.title)}</span>
             </a>
           `
@@ -218,7 +218,7 @@ class ArticleDetailManager {
             this.nextArticle
               ? `
             <a href="./article.html?id=${encodeURIComponent(this.nextArticle.slug)}" class="post-nav-card post-nav-next">
-              <span class="post-nav-label">次の記事 →</span>
+              <span class="post-nav-label">${i18n.t('nextArticle')} →</span>
               <span class="post-nav-title">${escapeHtml(this.nextArticle.title)}</span>
             </a>
           `
@@ -232,7 +232,6 @@ class ArticleDetailManager {
       ? `<svg class="icon-source" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`
       : `<svg class="icon-source" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`;
 
-    // 全体を組み立て
     this.container.innerHTML = `
       <article>
         <header style="margin-bottom: var(--space-8);">
@@ -246,7 +245,7 @@ class ArticleDetailManager {
 
           <h1 style="margin-bottom: var(--space-4);">${escapeHtml(title)}</h1>
 
-          <div class="tag-list" aria-label="タグ一覧" style="margin-bottom: var(--space-4);">
+          <div class="tag-list" aria-label="Tags" style="margin-bottom: var(--space-4);">
             ${tagsHtml}
           </div>
 

@@ -51,16 +51,21 @@ export function parseFrontMatter(content) {
 }
 
 /**
- * 日付文字列をフォーマット (例: 2026-08-16 -> 2026年8月16日)
+ * 日付文字列をフォーマット (英語 / 日本語)
  * @param {string} dateStr 
+ * @param {string} lang ('en' | 'ja')
  * @returns {string}
  */
-export function formatDate(dateStr) {
+export function formatDate(dateStr, lang = 'en') {
   if (!dateStr) return '';
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
-    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    if (lang === 'ja') {
+      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    }
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   } catch {
     return dateStr;
   }

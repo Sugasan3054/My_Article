@@ -1,28 +1,30 @@
 import { CreateWebWorkerMLCEngine, CreateMLCEngine } from '@mlc-ai/web-llm';
 import { extractYouTubeId, slugify, renderMarkdown } from './utils.js';
 import { initAurora } from './aurora.js';
+import { i18n } from './i18n.js';
+import { CardNav } from './card-nav.js';
 
 // 推奨モデル定義 (軽量モデルを先頭に配置)
 const AVAILABLE_MODELS = [
   {
     id: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
-    name: 'Qwen2.5-0.5B (超軽量・約350MB・推奨)',
-    size: '約350 MB',
+    name: 'Qwen2.5-0.5B (Ultra-light · ~350MB · Recommended)',
+    size: '~350 MB',
   },
   {
     id: 'SmolLM2-360M-Instruct-q4f16_1-MLC',
-    name: 'SmolLM2-360M (極小・約200MB・低スペック向け)',
-    size: '約200 MB',
+    name: 'SmolLM2-360M (Compact · ~200MB)',
+    size: '~200 MB',
   },
   {
     id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
-    name: 'Llama-3.2-1B (高速・約800MB)',
-    size: '約800 MB',
+    name: 'Llama-3.2-1B (Fast · ~800MB)',
+    size: '~800 MB',
   },
   {
     id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
-    name: 'Qwen2.5-1.5B (高精度日本語・約1.1GB)',
-    size: '約1.1 GB',
+    name: 'Qwen2.5-1.5B (Accurate · ~1.1GB)',
+    size: '~1.1 GB',
   },
 ];
 
@@ -71,6 +73,9 @@ class SummarizerApp {
   }
 
   async init() {
+    i18n.init();
+    new CardNav('.card-nav-container');
+
     await this.checkWebGPUSupport();
     this.populateModelSelect();
     this.setupEventListeners();
@@ -86,19 +91,19 @@ class SummarizerApp {
 
   async checkWebGPUSupport() {
     if (!navigator.gpu) {
-      this.showWebGPUUnavailable('お使いのブラウザは WebGPU をサポートしていません。Chrome/Edgeの最新版をご利用いただくか、下記の「クイック抽出モード」をご利用ください。');
+      this.showWebGPUUnavailable(i18n.t('webgpuWarningBody'));
       return;
     }
 
     try {
       const adapter = await navigator.gpu.requestAdapter();
       if (!adapter) {
-        this.showWebGPUUnavailable('WebGPUアダプタを取得できませんでした。ブラウザのハードウェアアクセラレーション設定をご確認ください。');
+        this.showWebGPUUnavailable(i18n.t('webgpuWarningBody'));
         return;
       }
       this.hasWebGPU = true;
     } catch (e) {
-      this.showWebGPUUnavailable(`WebGPUの初期化に失敗しました: ${e.message}`);
+      this.showWebGPUUnavailable(`WebGPU initialization error: ${e.message}`);
     }
   }
 
@@ -112,7 +117,7 @@ class SummarizerApp {
     if (this.btnGenerate) {
       this.btnGenerate.classList.remove('btn-primary');
       this.btnGenerate.classList.add('btn-secondary');
-      this.btnGenerate.title = 'WebGPU非対応のため、クイック抽出モードをご利用ください';
+      this.btnGenerate.title = 'WebGPU unavailable. Please use Quick Extract.';
     }
   }
 
@@ -124,7 +129,6 @@ class SummarizerApp {
   }
 
   setupEventListeners() {
-    // 入力タイプの切り替え
     this.sourceTypeInputs.forEach((radio) => {
       radio.addEventListener('change', (e) => {
         const type = e.target.value;
@@ -134,37 +138,32 @@ class SummarizerApp {
 
         const contentLabel = document.getElementById('content-label');
         if (contentLabel) {
-          contentLabel.textContent = isVideo ? 'YouTube 字幕テキスト' : '記事の本文テキスト';
+          contentLabel.textContent = isVideo ? i18n.t('labelContentTextVideo') : i18n.t('labelContentTextArticle');
         }
       });
     });
 
-    // モデル変更
     if (this.modelSelect) {
       this.modelSelect.addEventListener('change', (e) => {
         this.currentModelId = e.target.value;
-        this.destroyEngine(); // モデル変更時はワーカーとエンジンを再初期化
+        this.destroyEngine();
       });
     }
 
-    // WebLLM 要約生成ボタン
     if (this.btnGenerate) {
       this.btnGenerate.addEventListener('click', () => this.handleGenerate());
     }
 
-    // クイック要約（ルールベース）ボタン
     if (this.btnQuickExtract) {
       this.btnQuickExtract.addEventListener('click', () => this.handleQuickExtract());
     }
 
-    // プレビュー編集時のリアルタイムMarkdownレンダリング反映
     if (this.editBody) {
       this.editBody.addEventListener('input', () => {
         this.updateMarkdownPreview();
       });
     }
 
-    // タイトル入力時にスラッグを自動補完
     if (this.editTitle && this.editSlug) {
       this.editTitle.addEventListener('input', (e) => {
         if (!this.editSlug.dataset.manual) {
@@ -176,12 +175,10 @@ class SummarizerApp {
       });
     }
 
-    // Markdownダウンロードボタン
     if (this.btnDownload) {
       this.btnDownload.addEventListener('click', () => this.downloadMarkdown());
     }
 
-    // クリップボードコピーボタン
     if (this.btnCopy) {
       this.btnCopy.addEventListener('click', () => this.copyToClipboard());
     }
@@ -199,33 +196,31 @@ class SummarizerApp {
     if (this.engine) return this.engine;
 
     this.isLoadingEngine = true;
-    this.showProgress(0, 'WebLLM モデルのダウンロード・初期化を開始しています...（初回のみダウンロードが発生します）');
+    this.showProgress(0, i18n.t('progressLoading'));
 
     const initProgressCallback = (report) => {
       const progress = Math.round(report.progress * 100);
-      const text = report.text || 'モデルデータをダウンロード中...';
+      const text = report.text || 'Loading model weights...';
       this.showProgress(progress, text);
     };
 
     try {
-      // Web Worker を使用してUIのブロッキングを防ぐ
       if (typeof Worker !== 'undefined') {
         this.worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
         this.engine = await CreateWebWorkerMLCEngine(this.worker, this.currentModelId, {
           initProgressCallback,
         });
       } else {
-        // フォールバック: メインスレッド
         this.engine = await CreateMLCEngine(this.currentModelId, {
           initProgressCallback,
         });
       }
 
-      this.showProgress(100, 'モデルの準備が完了しました！要約を生成中...');
+      this.showProgress(100, i18n.t('progressDone'));
       return this.engine;
     } catch (err) {
       console.error('Failed to load WebLLM model:', err);
-      this.showProgress(0, `モデルの読み込みエラー: ${err.message}`, true);
+      this.showProgress(0, `Model load error: ${err.message}`, true);
       this.destroyEngine();
       throw err;
     } finally {
@@ -247,7 +242,7 @@ class SummarizerApp {
   async handleGenerate() {
     const rawContent = (this.sourceContentInput?.value || '').trim();
     if (!rawContent) {
-      alert('本文または字幕テキストを入力してください。');
+      alert(i18n.lang === 'ja' ? '本文または字幕テキストを入力してください。' : 'Please enter article or transcript text.');
       return;
     }
 
@@ -262,16 +257,17 @@ class SummarizerApp {
     try {
       const engine = await this.initEngine();
 
-      this.showProgress(100, 'AIが要約テキストをリアルタイム生成中...');
+      this.showProgress(100, i18n.lang === 'ja' ? 'AIが要約テキストをリアルタイム生成中...' : 'AI is generating summary in real-time...');
 
-      // プレビュー領域を表示
       if (this.previewSection) {
         this.previewSection.style.display = 'block';
         this.previewSection.scrollIntoView({ behavior: 'smooth' });
       }
       if (this.editBody) this.editBody.value = '';
 
-      const systemPrompt = `あなたは優秀な技術コミュニケーターです。入力された技術記事または動画の字幕テキストを読み込み、以下のフォーマットの日本語Markdownで要約を作成してください。
+      const isJa = i18n.lang === 'ja';
+      const systemPrompt = isJa
+        ? `あなたは優秀な技術コミュニケーターです。入力された技術記事または動画の字幕テキストを読み込み、以下のフォーマットの日本語Markdownで要約を作成してください。
 
 必ず以下の構成で出力してください:
 # 記事のタイトル（簡潔で魅力的なタイトル）
@@ -289,17 +285,39 @@ SUMMARY: [一覧カード用の2〜3行の簡潔な要約]
 （必要に応じてコードや仕組み、アーキテクチャの解説）
 
 ## まとめ
-（今後の展望や実務での活用指針）`;
+（今後の展望や実務での活用指針）`
+        : `You are an expert technical communicator. Given the following technical article or video transcript, generate a structured summary in Markdown format with the following template:
 
-      const userPrompt = `【コンテンツ種別】: ${sourceType === 'video' ? 'YouTube動画字幕' : '技術記事'}
+# Article Title (Engaging & concise title)
+TAGS: [Comma-separated 3-5 technical tags]
+SUMMARY: [2-3 line concise summary for card view]
+
+## Overview
+(3-4 sentences summarizing background & purpose)
+
+## Key Takeaways
+- Key technical point 1
+- Key architectural insight 2
+- Performance / developer benefits
+
+## Technical Details
+(Architecture, implementation patterns, code concepts)
+
+## Summary & Future Outlook
+(Next steps, takeaways for developers)`;
+
+      const userPrompt = isJa
+        ? `【コンテンツ種別】: ${sourceType === 'video' ? 'YouTube動画字幕' : '技術記事'}
 【元タイトル】: ${sourceTitle || '未指定'}
 【元URL】: ${sourceUrl || '未指定'}
 【本文テキスト】:
-${rawContent.slice(0, 5000)}
+${rawContent.slice(0, 5000)}`
+        : `[Content Type]: ${sourceType === 'video' ? 'YouTube Transcript' : 'Tech Article'}
+[Original Title]: ${sourceTitle || 'Untitled'}
+[Original URL]: ${sourceUrl || 'N/A'}
+[Text Content]:
+${rawContent.slice(0, 5000)}`;
 
-上記のフォーマットに沿って日本語で要約を生成してください。`;
-
-      // ストリーミング生成でリアルタイムにテキストを描画
       const chunks = await engine.chat.completions.create({
         messages: [
           { role: 'system', content: systemPrompt },
@@ -320,10 +338,10 @@ ${rawContent.slice(0, 5000)}
       }
 
       this.parseAndPopulateResult(fullResponse, sourceType, sourceUrl, sourceTitle);
-      this.showProgress(100, '要約の生成が完了しました！');
+      this.showProgress(100, isJa ? '要約の生成が完了しました！' : 'Summary generated successfully!');
     } catch (err) {
       console.error('Generation failed:', err);
-      alert(`要約生成中にエラーが発生しました: ${err.message}\n\n※ 端末のGPUメモリ不足や回線エラーの場合は、「クイック抽出 (WebGPU不要・即時)」ボタンをお試しください。`);
+      alert(`Error during summary generation: ${err.message}\n\nPlease try the "Quick Extract" button if WebGPU is unavailable.`);
     } finally {
       this.isGenerating = false;
       if (this.btnGenerate) this.btnGenerate.disabled = false;
@@ -331,31 +349,29 @@ ${rawContent.slice(0, 5000)}
     }
   }
 
-  /**
-   * WebGPUが使えない環境や即座に要約枠を作りたい場合のフォールバック（ルールベース重要文抽出）
-   */
   handleQuickExtract() {
     const rawContent = (this.sourceContentInput?.value || '').trim();
     if (!rawContent) {
-      alert('本文または字幕テキストを入力してください。');
+      alert(i18n.lang === 'ja' ? '本文または字幕テキストを入力してください。' : 'Please enter article or transcript text.');
       return;
     }
 
     const sourceType = document.querySelector('input[name="source-type"]:checked')?.value || 'article';
     const sourceUrl = (this.sourceUrlInput?.value || '').trim();
     const sourceTitle = (this.sourceTitleInput?.value || '').trim();
+    const isJa = i18n.lang === 'ja';
 
-    // 文を分割して重要文を抽出
     const sentences = rawContent
-      .split(/[\n。！？]/)
+      .split(/[\n.!?。！？]/)
       .map((s) => s.trim())
       .filter((s) => s.length > 15);
 
-    const title = sourceTitle || (sentences[0] ? sentences[0].slice(0, 40) + '...' : '技術記事要約');
-    const summary = sentences.slice(0, 3).join('。') + (sentences.length > 0 ? '。' : '');
+    const title = sourceTitle || (sentences[0] ? sentences[0].slice(0, 40) + '...' : (isJa ? '技術記事要約' : 'Tech Article Summary'));
+    const summary = sentences.slice(0, 3).join('. ') + (sentences.length > 0 ? '.' : '');
     const points = sentences.slice(3, 8).map((s) => `- ${s}`).join('\n');
 
-    const generatedBody = `## 概要
+    const generatedBody = isJa
+      ? `## 概要
 
 ${summary || '概要をここに記載します。'}
 
@@ -369,10 +385,25 @@ ${sentences.slice(8, 15).join('。\n\n') || rawContent.slice(0, 500)}
 
 ## まとめ
 
-本記事・セッションでは上記内容について解説されています。詳細は出典元をご参照ください。`;
+本記事・セッションでは上記内容について解説されています。詳細は出典元をご参照ください。`
+      : `## Overview
+
+${summary || 'Overview of the article / session.'}
+
+## Key Takeaways
+
+${points || '- Key point 1\n- Key point 2'}
+
+## Detailed Breakdown
+
+${sentences.slice(8, 15).join('.\n\n') || rawContent.slice(0, 500)}
+
+## Summary
+
+This article outlines key technical concepts and insights. Please refer to the original source link for complete details.`;
 
     if (this.editTitle) this.editTitle.value = title;
-    if (this.editTags) this.editTags.value = 'Web技術, アーキテクチャ, まとめ';
+    if (this.editTags) this.editTags.value = isJa ? 'Web技術, アーキテクチャ, AI' : 'Web, AI, Architecture';
     if (this.editSlug) this.editSlug.value = slugify(title);
     if (this.editSummary) this.editSummary.value = summary.slice(0, 150);
     if (this.editBody) this.editBody.value = generatedBody;
@@ -386,30 +417,26 @@ ${sentences.slice(8, 15).join('。\n\n') || rawContent.slice(0, 500)}
   }
 
   parseAndPopulateResult(responseText, sourceType, sourceUrl, sourceTitle) {
-    let title = sourceTitle || '要約記事';
-    let tags = ['AI', '技術'];
+    let title = sourceTitle || 'Article Summary';
+    let tags = ['AI', 'Tech'];
     let summary = '';
     let body = responseText;
 
-    // タイトル抽出
     const titleMatch = responseText.match(/^#\s+(.+)$/m);
     if (titleMatch) {
       title = titleMatch[1].trim();
     }
 
-    // タグ抽出
     const tagsMatch = responseText.match(/^TAGS:\s*\[?([^\]\n]+)\]?/m);
     if (tagsMatch) {
       tags = tagsMatch[1].split(',').map((t) => t.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
     }
 
-    // 要約抽出
     const summaryMatch = responseText.match(/^SUMMARY:\s*(.+)$/m);
     if (summaryMatch) {
       summary = summaryMatch[1].trim();
     }
 
-    // 本文からメタ情報を除去して整形
     body = responseText
       .replace(/^#\s+.+$/m, '')
       .replace(/^TAGS:.+$/m, '')
@@ -437,7 +464,7 @@ ${sentences.slice(8, 15).join('。\n\n') || rawContent.slice(0, 500)}
   generateFullMarkdown() {
     const title = this.editTitle?.value || 'Untitled';
     const date = this.editDate?.value || new Date().toISOString().split('T')[0];
-    const tags = (this.editTags?.value || '技術')
+    const tags = (this.editTags?.value || 'Tech')
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
@@ -490,9 +517,9 @@ ${body}
     const content = this.generateFullMarkdown();
     try {
       await navigator.clipboard.writeText(content);
-      alert('Markdownコードをクリップボードにコピーしました！');
+      alert(i18n.lang === 'ja' ? 'Markdownコードをクリップボードにコピーしました！' : 'Markdown copied to clipboard!');
     } catch {
-      alert('クリップボードへのコピーに失敗しました。手動でコピーしてください。');
+      alert('Failed to copy to clipboard.');
     }
   }
 }

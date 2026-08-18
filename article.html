@@ -1,48 +1,107 @@
 <!DOCTYPE html>
-<html lang="ja" class="dark">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
-  <title>記事詳細 | 技術記事要約サイト</title>
-  <meta name="description" content="技術記事・テック動画の要約詳細ページ。">
+  <title>Article Detail | Tech Summary Hub</title>
+  <meta name="description" content="Technical article and video summary detail page.">
   <link rel="stylesheet" href="./src/css/base.css">
   <link rel="stylesheet" href="./src/css/components.css">
+  <link rel="stylesheet" href="./src/css/card-nav.css">
 </head>
 <body>
   <!-- Aurora WebGL アニメーション背景 -->
   <div id="aurora-bg" class="aurora-background" aria-hidden="true"></div>
 
   <!-- スキップリンク -->
-  <a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
+  <a href="#main-content" class="skip-link" data-i18n="skipLink">Skip to main content</a>
 
-  <!-- ヘッダー -->
-  <header class="site-header">
-    <div class="site-container site-header-inner">
-      <a href="./index.html" class="site-logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-        </svg>
-        <span>Tech Summary Hub</span>
-      </a>
+  <!-- Card Nav ヘッダー -->
+  <header class="site-header" style="background: transparent; border: none; padding-top: var(--space-4);">
+    <div class="site-container">
+      <div class="card-nav-container card-nav-wrapper">
+        <nav class="card-nav" aria-label="Main Navigation">
+          <div class="card-nav-top">
+            <button type="button" class="card-nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+              <span class="card-nav-hamburger-line"></span>
+              <span class="card-nav-hamburger-line"></span>
+            </button>
 
-      <nav aria-label="主要ナビゲーション">
-        <ul class="site-nav-list">
-          <li>
-            <a href="./index.html" class="site-nav-link">記事一覧</a>
-          </li>
-          <li>
-            <a href="./summarize.html" class="site-nav-link">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            <a href="./index.html" class="card-nav-logo">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
               </svg>
-              <span>要約ツール (自分用)</span>
+              <span>Tech Summary Hub</span>
             </a>
-          </li>
-        </ul>
-      </nav>
+
+            <div class="card-nav-actions">
+              <a href="./summarize.html" class="card-nav-cta" data-i18n="navSummarizer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>AI Summarizer</span>
+              </a>
+
+              <div class="lang-switch-wrapper" title="Switch Language (EN / JA)">
+                <span id="lang-switch-label" aria-hidden="true">EN</span>
+                <label class="lang-switch" aria-label="Toggle Language (English / Japanese)">
+                  <input type="checkbox" id="lang-toggle-checkbox">
+                  <span class="lang-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-nav-content" aria-hidden="true">
+            <div class="nav-card">
+              <div class="nav-card-label" data-i18n="cardNavTopicsTitle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>Popular Topics</span>
+              </div>
+              <div class="nav-card-links">
+                <a href="./index.html" class="nav-card-link"><span>→ All Articles</span></a>
+              </div>
+            </div>
+
+            <div class="nav-card">
+              <div class="nav-card-label" data-i18n="cardNavToolsTitle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="13 2 13 9 20 9"></polyline>
+                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                </svg>
+                <span>Quick Actions</span>
+              </div>
+              <div class="nav-card-links">
+                <a href="./summarize.html" class="nav-card-link" data-i18n="cardNavActionNew">
+                  <span>→ Create New Summary</span>
+                </a>
+                <a href="https://github.com/Sugasan3054/My_Article" target="_blank" rel="noopener noreferrer" class="nav-card-link" data-i18n="cardNavActionGh">
+                  <span>→ GitHub Repository</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="nav-card">
+              <div class="nav-card-label" data-i18n="cardNavAboutTitle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Platform</span>
+              </div>
+              <p class="nav-card-desc" data-i18n="cardNavAboutDesc">
+                Privacy-first tech knowledge repository with zero-server AI summarization.
+              </p>
+            </div>
+          </div>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -50,20 +109,20 @@
   <main id="main-content" class="site-main">
     <div class="site-container">
       <!-- パンくずリスト -->
-      <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <nav class="breadcrumbs" aria-label="Breadcrumb navigation">
         <ol class="breadcrumbs-list">
           <li class="breadcrumbs-item">
-            <a href="./index.html">トップ</a>
+            <a href="./index.html" data-i18n="navArticles">Articles</a>
           </li>
           <li class="breadcrumbs-item" aria-current="page" id="breadcrumb-title">
-            読み込み中...
+            Loading...
           </li>
         </ol>
       </nav>
 
       <!-- ローディング表示 -->
       <div id="article-loading" class="alert alert-info" role="status">
-        <p>記事を読み込んでいます...</p>
+        <p>Loading article content...</p>
       </div>
 
       <!-- 記事本文コンテナ -->
@@ -75,10 +134,10 @@
   <footer class="site-footer">
     <div class="site-container site-footer-inner">
       <div>
-        <p><strong>Tech Summary Hub</strong> - GitHub Pagesでホスティングされた静的ナレッジベース</p>
+        <p><strong>Tech Summary Hub</strong> - Privacy-first static knowledge hub</p>
       </div>
       <div>
-        <a href="./index.html">← 記事一覧に戻る</a>
+        <a href="./index.html" data-i18n="backToArticles">← Back to Articles</a>
       </div>
     </div>
   </footer>

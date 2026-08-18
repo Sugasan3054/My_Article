@@ -1,0 +1,286 @@
+/* ============================================================
+   Card Nav (vue-bits 参考) コンポーネントスタイル
+   ============================================================ */
+
+.card-nav-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto var(--space-8) auto;
+  z-index: 90;
+}
+
+.card-nav {
+  position: relative;
+  height: 64px;
+  background-color: var(--color-bg-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  will-change: height;
+  transition: border-color var(--transition-fast);
+}
+
+.card-nav.open {
+  border-color: var(--color-primary-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-nav-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .card-nav-top {
+    padding: 0 var(--space-6);
+  }
+}
+
+/* ハンバーガーメニュー */
+.card-nav-hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-main);
+  transition: opacity var(--transition-fast);
+}
+
+.card-nav-hamburger:hover {
+  opacity: 0.8;
+  background-color: var(--color-bg-subtle);
+}
+
+.card-nav-hamburger-line {
+  width: 24px;
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 2px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+  transform-origin: 50% 50%;
+}
+
+.card-nav-hamburger.open .card-nav-hamburger-line:nth-child(1) {
+  transform: translateY(3.5px) rotate(45deg);
+}
+
+.card-nav-hamburger.open .card-nav-hamburger-line:nth-child(2) {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+
+/* ロゴ */
+.card-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-decoration: none;
+}
+
+.card-nav-logo:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.card-nav-logo svg {
+  color: var(--color-primary);
+}
+
+/* 右側アクションエリア (CTAボタン + 言語切り替えトグル) */
+.card-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.card-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse) !important;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  min-height: 38px;
+  transition: background-color var(--transition-fast);
+}
+
+.card-nav-cta:hover {
+  background-color: var(--color-primary-hover);
+  text-decoration: none;
+}
+
+/* 言語切り替えスイッチ */
+.lang-switch-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.lang-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.lang-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.lang-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 24px;
+}
+
+.lang-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--color-primary);
+  transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 50%;
+}
+
+.lang-switch input:checked + .lang-slider {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary-border);
+}
+
+.lang-switch input:checked + .lang-slider:before {
+  transform: translateX(20px);
+  background-color: var(--color-primary);
+}
+
+/* 展開コンテンツ領域 */
+.card-nav-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 64px;
+  bottom: 0;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  z-index: 5;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .card-nav-content {
+    flex-direction: row;
+    align-items: stretch;
+    padding: var(--space-4) var(--space-6);
+  }
+}
+
+.card-nav.open .card-nav-content {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 展開内部のカード */
+.nav-card {
+  position: relative;
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: rgba(13, 17, 23, 0.6);
+  backdrop-filter: blur(10px);
+  min-width: 0;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.nav-card:hover {
+  border-color: var(--color-primary-border);
+  background-color: rgba(22, 27, 34, 0.85);
+}
+
+.nav-card-label {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-card-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.nav-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+  cursor: pointer;
+}
+
+.nav-card-link:hover {
+  color: var(--color-primary);
+  transform: translateX(3px);
+  text-decoration: none;
+}
+
+.nav-card-desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+}

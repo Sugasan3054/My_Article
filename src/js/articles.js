@@ -1,5 +1,8 @@
 import { formatDate } from './utils.js';
 import { initAurora } from './aurora.js';
+import { i18n } from './i18n.js';
+import { CardNav } from './card-nav.js';
+import { animateSplitText } from './split-text.js';
 
 class ArticleListManager {
   constructor() {
@@ -12,34 +15,66 @@ class ArticleListManager {
     this.searchInput = document.getElementById('search-input');
     this.sortSelect = document.getElementById('sort-select');
     this.tagsContainer = document.getElementById('tags-container');
+    this.cardNavTagsContainer = document.getElementById('card-nav-tag-links');
     this.articlesGrid = document.getElementById('articles-grid');
     this.resultCountLive = document.getElementById('result-count-live');
     this.emptyState = document.getElementById('empty-state');
+    this.heroDescTarget = document.getElementById('split-text-target');
 
     this.init();
   }
 
   async init() {
+    // i18n 初期化
+    i18n.init();
+    i18n.onLanguageChange(() => {
+      this.updateLanguage();
+    });
+
+    // Card Nav 初期化
+    new CardNav('.card-nav-container');
+
+    // Split Text アニメーション初期化
+    this.triggerSplitText();
+
     try {
       await this.loadIndex();
       this.setupEventListeners();
       this.renderTags();
+      this.renderCardNavTags();
       this.applyFilters();
     } catch (err) {
       console.error('Failed to initialize article list:', err);
       if (this.articlesGrid) {
         this.articlesGrid.innerHTML = `
           <div class="alert alert-error" role="alert">
-            <p><strong>記事データの読み込みに失敗しました。</strong></p>
-            <p><code>npm run build:index</code> が実行されているかご確認ください。</p>
+            <p><strong>Failed to load article index.</strong></p>
+            <p>Please ensure <code>npm run build:index</code> has been run.</p>
           </div>
         `;
       }
     }
   }
 
+  triggerSplitText() {
+    if (this.heroDescTarget) {
+      const text = i18n.t('siteSubtitle');
+      animateSplitText(this.heroDescTarget, {
+        text,
+        splitType: 'words',
+        delay: 0.03,
+        duration: 0.8,
+      });
+    }
+  }
+
+  updateLanguage() {
+    this.triggerSplitText();
+    this.renderTags();
+    this.renderArticles();
+  }
+
   async loadIndex() {
-    // 相対パスで index.json を取得 (GitHub Pages対応)
     const res = await fetch('./content/index.json');
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -68,7 +103,6 @@ class ArticleListManager {
   renderTags() {
     if (!this.tagsContainer) return;
 
-    // 全記事からタグを収集・集計
     const tagCountMap = {};
     for (const article of this.articles) {
       if (Array.isArray(article.tags)) {
@@ -79,11 +113,12 @@ class ArticleListManager {
     }
 
     const uniqueTags = Object.keys(tagCountMap).sort();
+    const allLabel = i18n.t('allTags');
 
     let html = `
       <li>
         <button type="button" class="tag-chip ${this.selectedTag === 'all' ? 'is-active' : ''}" data-tag="all" aria-pressed="${this.selectedTag === 'all'}">
-          すべて (${this.articles.length})
+          ${allLabel} (${this.articles.length})
         </button>
       </li>
     `;
@@ -101,34 +136,82 @@ class ArticleListManager {
 
     this.tagsContainer.innerHTML = html;
 
-    // タグクリックイベント
     this.tagsContainer.querySelectorAll('button[data-tag]').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const tag = e.currentTarget.getAttribute('data-tag');
-        this.selectedTag = tag;
-        
-        // ボタン状態更新
-        this.tagsContainer.querySelectorAll('button[data-tag]').forEach((b) => {
-          const active = b.getAttribute('data-tag') === tag;
-          b.classList.toggle('is-active', active);
-          b.setAttribute('aria-pressed', active);
-        });
-
-        this.applyFilters();
+        this.selectTag(tag);
       });
     });
   }
 
+  renderCardNavTags() {
+    if (!this.cardNavTagsContainer) return;
+
+    const tagCountMap = {};
+    for (const article of this.articles) {
+      if (Array.isArray(article.tags)) {
+        for (const tag of article.tags) {
+          tagCountMap[tag] = (tagCountMap[tag] || 0) + 1;
+        }
+      }
+    }
+
+    // 上位5タグ
+    const topTags = Object.keys(tagCountMap)
+      .sort((a, b) => tagCountMap[b] - tagCountMap[a])
+      .slice(0, 5);
+
+    let html = `
+      <a class="nav-card-link" data-nav-tag="all">
+        <span>→ ${i18n.t('allTags')} (${this.articles.length})</span>
+      </a>
+    `;
+
+    topTags.forEach((tag) => {
+      html += `
+        <a class="nav-card-link" data-nav-tag="${tag}">
+          <span>→ #${tag} (${tagCountMap[tag]})</span>
+        </a>
+      `;
+    });
+
+    this.cardNavTagsContainer.innerHTML = html;
+
+    this.cardNavTagsContainer.querySelectorAll('[data-nav-tag]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const tag = e.currentTarget.getAttribute('data-nav-tag');
+        this.selectTag(tag);
+        // カードナビを閉じる
+        const nav = document.querySelector('.card-nav-hamburger');
+        if (nav && nav.classList.contains('open')) {
+          nav.click();
+        }
+      });
+    });
+  }
+
+  selectTag(tag) {
+    this.selectedTag = tag;
+
+    if (this.tagsContainer) {
+      this.tagsContainer.querySelectorAll('button[data-tag]').forEach((b) => {
+        const active = b.getAttribute('data-tag') === tag;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', active);
+      });
+    }
+
+    this.applyFilters();
+  }
+
   applyFilters() {
     this.filteredArticles = this.articles.filter((article) => {
-      // タグ判定
       if (this.selectedTag !== 'all') {
         if (!article.tags || !article.tags.includes(this.selectedTag)) {
           return false;
         }
       }
 
-      // 検索キーワード判定 (タイトル、要約、タグ、出典元タイトル)
       if (this.searchQuery) {
         const titleMatch = (article.title || '').toLowerCase().includes(this.searchQuery);
         const summaryMatch = (article.summary || '').toLowerCase().includes(this.searchQuery);
@@ -142,7 +225,6 @@ class ArticleListManager {
       return true;
     });
 
-    // ソート
     if (this.sortBy === 'newest') {
       this.filteredArticles.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     } else if (this.sortBy === 'oldest') {
@@ -155,9 +237,8 @@ class ArticleListManager {
   renderArticles() {
     if (!this.articlesGrid) return;
 
-    // スクリーンリーダー通知 (aria-live)
     if (this.resultCountLive) {
-      this.resultCountLive.textContent = `検索結果: ${this.filteredArticles.length}件の記事が見つかりました。`;
+      this.resultCountLive.textContent = i18n.t('resultsCount', this.filteredArticles.length);
     }
 
     if (this.filteredArticles.length === 0) {
@@ -176,8 +257,8 @@ class ArticleListManager {
       .map((article) => {
         const isVideo = article.source_type === 'video';
         const sourceBadgeClass = isVideo ? 'video' : 'article';
-        const sourceBadgeLabel = isVideo ? '動画' : '記事';
-        const formattedDate = formatDate(article.date);
+        const sourceBadgeLabel = isVideo ? i18n.t('sourceLabelVideo') : i18n.t('sourceLabelArticle');
+        const formattedDate = formatDate(article.date, i18n.lang);
 
         const tagsHtml = (article.tags || [])
           .map((t) => `<span class="tag-chip">#${t}</span>`)
@@ -204,11 +285,11 @@ class ArticleListManager {
             </h2>
 
             <p class="article-card-summary">
-              ${escapeHtml(article.summary || '要約がありません')}
+              ${escapeHtml(article.summary || 'No summary available.')}
             </p>
 
             <div class="article-card-footer">
-              <div class="tag-list" aria-label="記事のタグ">
+              <div class="tag-list" aria-label="Article tags">
                 ${tagsHtml}
               </div>
             </div>
