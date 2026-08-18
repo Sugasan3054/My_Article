@@ -11,13 +11,10 @@ export const translations = {
     siteSubtitle: 'Curated summaries of next-generation tech articles & developer talks. Powered by in-browser AI.',
     navArticles: 'Articles',
     navSummarizer: 'AI Summarizer',
-    navAbout: 'About',
-    navCategories: 'Topics',
-    searchPlaceholder: 'Search articles by keywords, tags, or topics...',
+    searchPlaceholder: 'Search articles...',
     sortBy: 'Sort by:',
     sortNewest: 'Newest first',
     sortOldest: 'Oldest first',
-    filterByTag: 'Filter by Tag:',
     allTags: 'All',
     resultsCount: (n) => `Found ${n} article${n === 1 ? '' : 's'}.`,
     noArticlesFound: 'No articles found matching your criteria.',
@@ -31,13 +28,13 @@ export const translations = {
     nextArticle: 'Next Article',
     backToArticles: 'Back to Articles',
     
-    // Card Nav
-    cardNavAboutTitle: 'Platform',
-    cardNavAboutDesc: 'Privacy-first tech knowledge repository with zero-server AI summarization.',
-    cardNavTopicsTitle: 'Popular Topics',
-    cardNavToolsTitle: 'Quick Actions',
-    cardNavActionNew: 'Create New Summary',
-    cardNavActionGh: 'GitHub Repository',
+    // Card Nav 3項目
+    cardNavAiTitle: 'AI & LLM',
+    cardNavAiDesc: 'Large language models, WebLLM, multimodal architectures, and local inference.',
+    cardNavSecurityTitle: 'Security',
+    cardNavSecurityDesc: 'Web application security, XSS prevention, zero-trust architectures, and privacy.',
+    cardNavDevTitle: 'Development',
+    cardNavDevDesc: 'WebGPU, modern frontend engineering, performance optimization, and system design.',
 
     // Summarizer Tool
     summarizerTitle: 'WebLLM Article Summarizer',
@@ -84,13 +81,10 @@ export const translations = {
     siteSubtitle: '次世代の技術記事・開発者セッションを厳選要約。ブラウザ内AIによるゼロサーバー要約ナレッジハブ。',
     navArticles: '記事一覧',
     navSummarizer: '要約ツール (自分用)',
-    navAbout: 'サイト概要',
-    navCategories: 'トピック',
-    searchPlaceholder: 'キーワード、タグ、トピックで記事を検索...',
+    searchPlaceholder: '記事を検索...',
     sortBy: '並び替え:',
     sortNewest: '新着順',
     sortOldest: '古い順',
-    filterByTag: 'タグで絞り込み:',
     allTags: 'すべて',
     resultsCount: (n) => `検索結果: ${n}件の記事が見つかりました。`,
     noArticlesFound: '該当する記事が見つかりませんでした。条件を変更してお試しください。',
@@ -104,13 +98,13 @@ export const translations = {
     nextArticle: '次の記事',
     backToArticles: '記事一覧に戻る',
 
-    // Card Nav
-    cardNavAboutTitle: 'プラットフォーム',
-    cardNavAboutDesc: 'ブラウザ内AIでゼロサーバー要約を実現するプライバシー重視のナレッジベース。',
-    cardNavTopicsTitle: '人気トピック',
-    cardNavToolsTitle: 'クイック操作',
-    cardNavActionNew: '新規要約を作成',
-    cardNavActionGh: 'GitHub リポジトリ',
+    // Card Nav 3項目
+    cardNavAiTitle: 'AI',
+    cardNavAiDesc: '大規模言語モデル (LLM)、WebLLM、マルチモーダル、オンデバイス推論技術。',
+    cardNavSecurityTitle: 'セキュリティ',
+    cardNavSecurityDesc: 'Webアプリケーション脆弱性対策、XSSサニタイズ、ゼロトラスト、プライバシー設計。',
+    cardNavDevTitle: '開発 (ソフトウェア)',
+    cardNavDevDesc: 'WebGPU、モダンフロントエンド、パフォーマンス最適化、システム設計。',
 
     // Summarizer Tool
     summarizerTitle: 'WebLLM 要約作成ツール (自分専用)',
@@ -156,7 +150,6 @@ export const translations = {
 
 class I18nManager {
   constructor() {
-    // デフォルト言語は英語 ('en')
     this.currentLang = localStorage.getItem('site_lang') || 'en';
     this.listeners = [];
   }
@@ -222,7 +215,6 @@ class I18nManager {
       }
     });
 
-    // スイッチトグルの同期
     const toggleInput = document.getElementById('lang-toggle-checkbox');
     if (toggleInput) {
       toggleInput.checked = this.currentLang === 'ja';
@@ -237,7 +229,6 @@ class I18nManager {
     document.documentElement.lang = this.currentLang;
     this.updateDOM();
 
-    // スイッチトグル要素のイベントバインド
     const toggleInput = document.getElementById('lang-toggle-checkbox');
     if (toggleInput) {
       toggleInput.checked = this.currentLang === 'ja';

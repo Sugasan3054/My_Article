@@ -13,35 +13,29 @@ class ArticleListManager {
     this.sortBy = 'newest';
 
     this.searchInput = document.getElementById('search-input');
-    this.sortSelect = document.getElementById('sort-select');
-    this.tagsContainer = document.getElementById('tags-container');
-    this.cardNavTagsContainer = document.getElementById('card-nav-tag-links');
     this.articlesGrid = document.getElementById('articles-grid');
     this.resultCountLive = document.getElementById('result-count-live');
     this.emptyState = document.getElementById('empty-state');
     this.heroDescTarget = document.getElementById('split-text-target');
+    this.activeFilterBadge = document.getElementById('active-filter-badge');
+    this.activeFilterName = document.getElementById('active-filter-name');
 
     this.init();
   }
 
   async init() {
-    // i18n 初期化
     i18n.init();
     i18n.onLanguageChange(() => {
       this.updateLanguage();
     });
 
-    // Card Nav 初期化
     new CardNav('.card-nav-container');
-
-    // Split Text アニメーション初期化
     this.triggerSplitText();
 
     try {
       await this.loadIndex();
       this.setupEventListeners();
-      this.renderTags();
-      this.renderCardNavTags();
+      this.setupCardNavFilters();
       this.applyFilters();
     } catch (err) {
       console.error('Failed to initialize article list:', err);
@@ -70,7 +64,6 @@ class ArticleListManager {
 
   updateLanguage() {
     this.triggerSplitText();
-    this.renderTags();
     this.renderArticles();
   }
 
@@ -92,99 +85,28 @@ class ArticleListManager {
       });
     }
 
-    if (this.sortSelect) {
-      this.sortSelect.addEventListener('change', (e) => {
-        this.sortBy = e.target.value;
-        this.applyFilters();
+    if (this.activeFilterName) {
+      this.activeFilterName.addEventListener('click', () => {
+        this.selectTag('all');
       });
     }
   }
 
-  renderTags() {
-    if (!this.tagsContainer) return;
-
-    const tagCountMap = {};
-    for (const article of this.articles) {
-      if (Array.isArray(article.tags)) {
-        for (const tag of article.tags) {
-          tagCountMap[tag] = (tagCountMap[tag] || 0) + 1;
-        }
-      }
-    }
-
-    const uniqueTags = Object.keys(tagCountMap).sort();
-    const allLabel = i18n.t('allTags');
-
-    let html = `
-      <li>
-        <button type="button" class="tag-chip ${this.selectedTag === 'all' ? 'is-active' : ''}" data-tag="all" aria-pressed="${this.selectedTag === 'all'}">
-          ${allLabel} (${this.articles.length})
-        </button>
-      </li>
-    `;
-
-    uniqueTags.forEach((tag) => {
-      const isActive = this.selectedTag === tag;
-      html += `
-        <li>
-          <button type="button" class="tag-chip ${isActive ? 'is-active' : ''}" data-tag="${tag}" aria-pressed="${isActive}">
-            #${tag} (${tagCountMap[tag]})
-          </button>
-        </li>
-      `;
-    });
-
-    this.tagsContainer.innerHTML = html;
-
-    this.tagsContainer.querySelectorAll('button[data-tag]').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const tag = e.currentTarget.getAttribute('data-tag');
-        this.selectTag(tag);
-      });
-    });
-  }
-
-  renderCardNavTags() {
-    if (!this.cardNavTagsContainer) return;
-
-    const tagCountMap = {};
-    for (const article of this.articles) {
-      if (Array.isArray(article.tags)) {
-        for (const tag of article.tags) {
-          tagCountMap[tag] = (tagCountMap[tag] || 0) + 1;
-        }
-      }
-    }
-
-    // 上位5タグ
-    const topTags = Object.keys(tagCountMap)
-      .sort((a, b) => tagCountMap[b] - tagCountMap[a])
-      .slice(0, 5);
-
-    let html = `
-      <a class="nav-card-link" data-nav-tag="all">
-        <span>→ ${i18n.t('allTags')} (${this.articles.length})</span>
-      </a>
-    `;
-
-    topTags.forEach((tag) => {
-      html += `
-        <a class="nav-card-link" data-nav-tag="${tag}">
-          <span>→ #${tag} (${tagCountMap[tag]})</span>
-        </a>
-      `;
-    });
-
-    this.cardNavTagsContainer.innerHTML = html;
-
-    this.cardNavTagsContainer.querySelectorAll('[data-nav-tag]').forEach((link) => {
+  setupCardNavFilters() {
+    document.querySelectorAll('[data-nav-filter]').forEach((link) => {
       link.addEventListener('click', (e) => {
-        const tag = e.currentTarget.getAttribute('data-nav-tag');
-        this.selectTag(tag);
-        // カードナビを閉じる
-        const nav = document.querySelector('.card-nav-hamburger');
-        if (nav && nav.classList.contains('open')) {
-          nav.click();
+        const filter = e.currentTarget.getAttribute('data-nav-filter');
+        this.selectTag(filter);
+
+        // ハンバーガーメニューを閉じる
+        const hamburger = document.querySelector('.card-nav-hamburger');
+        if (hamburger && hamburger.classList.contains('open')) {
+          hamburger.click();
+        }
+
+        // 記事リストへスムーズスクロール
+        if (this.articlesGrid) {
+          this.articlesGrid.scrollIntoView({ behavior: 'smooth' });
         }
       });
     });
@@ -193,12 +115,13 @@ class ArticleListManager {
   selectTag(tag) {
     this.selectedTag = tag;
 
-    if (this.tagsContainer) {
-      this.tagsContainer.querySelectorAll('button[data-tag]').forEach((b) => {
-        const active = b.getAttribute('data-tag') === tag;
-        b.classList.toggle('is-active', active);
-        b.setAttribute('aria-pressed', active);
-      });
+    if (this.activeFilterBadge && this.activeFilterName) {
+      if (tag === 'all') {
+        this.activeFilterBadge.style.display = 'none';
+      } else {
+        this.activeFilterBadge.style.display = 'inline-flex';
+        this.activeFilterName.textContent = `#${tag} ✕`;
+      }
     }
 
     this.applyFilters();
@@ -207,7 +130,7 @@ class ArticleListManager {
   applyFilters() {
     this.filteredArticles = this.articles.filter((article) => {
       if (this.selectedTag !== 'all') {
-        if (!article.tags || !article.tags.includes(this.selectedTag)) {
+        if (!article.tags || !article.tags.some((t) => t.toLowerCase() === this.selectedTag.toLowerCase())) {
           return false;
         }
       }
@@ -261,7 +184,7 @@ class ArticleListManager {
         const formattedDate = formatDate(article.date, i18n.lang);
 
         const tagsHtml = (article.tags || [])
-          .map((t) => `<span class="tag-chip">#${t}</span>`)
+          .map((t) => `<button type="button" class="tag-chip" data-card-tag="${escapeHtml(t)}">#${escapeHtml(t)}</button>`)
           .join(' ');
 
         const sourceIcon = isVideo
@@ -299,6 +222,15 @@ class ArticleListManager {
       .join('');
 
     this.articlesGrid.innerHTML = cardsHtml;
+
+    // カード内のタグクリックで絞り込み
+    this.articlesGrid.querySelectorAll('[data-card-tag]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tag = e.currentTarget.getAttribute('data-card-tag');
+        this.selectTag(tag);
+      });
+    });
   }
 }
 
