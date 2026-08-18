@@ -19,10 +19,10 @@
   --color-link: #004098;               /* リンク色 (下線と併用) */
   --color-link-hover: #002966;         /* リンクホバー */
   
-  --color-bg-body: #f8fafc;            /* ページ背景 */
-  --color-bg-surface: #ffffff;         /* カード・パネル背景 */
-  --color-bg-subtle: #f1f5f9;          /* 入力欄・サブ領域背景 */
-  --color-border: #cbd5e1;             /* 標準ボーダー */
+  --color-bg-body: #f4f8fb;            /* ページ背景 */
+  --color-bg-surface: rgba(255, 255, 255, 0.88); /* カード・パネル背景 (すりガラス対応) */
+  --color-bg-subtle: rgba(241, 245, 249, 0.85);  /* 入力欄・サブ領域背景 */
+  --color-border: rgba(203, 213, 225, 0.8);      /* 標準ボーダー */
   --color-border-strong: #94a3b8;      /* 強調ボーダー */
   
   --color-focus-ring: #005ea2;         /* フォーカスリング */
@@ -108,10 +108,10 @@
     --color-link: #79b8ff;
     --color-link-hover: #a5d6ff;
 
-    --color-bg-body: #0d1117;
-    --color-bg-surface: #161b22;
-    --color-bg-subtle: #21262d;
-    --color-border: #30363d;
+    --color-bg-body: #0a0e14;
+    --color-bg-surface: rgba(22, 27, 34, 0.85);
+    --color-bg-subtle: rgba(33, 38, 45, 0.8);
+    --color-border: rgba(48, 54, 61, 0.8);
     --color-border-strong: #6e7681;
 
     --color-focus-ring: #58a6ff;

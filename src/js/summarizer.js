@@ -1,5 +1,6 @@
 import { CreateWebWorkerMLCEngine, CreateMLCEngine } from '@mlc-ai/web-llm';
 import { extractYouTubeId, slugify, renderMarkdown } from './utils.js';
+import { initAurora } from './aurora.js';
 
 // 推奨モデル定義 (軽量モデルを先頭に配置)
 const AVAILABLE_MODELS = [
@@ -497,5 +498,6 @@ ${body}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initAurora('#aurora-bg');
   new SummarizerApp();
 });

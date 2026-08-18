@@ -13,7 +13,8 @@
     "@mlc-ai/web-llm": "^0.2.78",
     "dompurify": "^3.2.4",
     "js-yaml": "^4.1.0",
-    "marked": "^15.0.7"
+    "marked": "^15.0.7",
+    "ogl": "^1.0.11"
   },
   "devDependencies": {
     "vite": "^6.2.0"

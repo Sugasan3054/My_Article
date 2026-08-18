@@ -1,4 +1,5 @@
 import { renderMarkdown, parseFrontMatter, formatDate, extractYouTubeId } from './utils.js';
+import { initAurora } from './aurora.js';
 
 class ArticleDetailManager {
   constructor() {
@@ -277,5 +278,6 @@ function escapeHtml(str) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initAurora('#aurora-bg');
   new ArticleDetailManager();
 });

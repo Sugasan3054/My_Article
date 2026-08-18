@@ -1,4 +1,5 @@
 import { formatDate } from './utils.js';
+import { initAurora } from './aurora.js';
 
 class ArticleListManager {
   constructor() {
@@ -231,5 +232,6 @@ function escapeHtml(str) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initAurora('#aurora-bg');
   new ArticleListManager();
 });

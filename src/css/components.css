@@ -150,6 +150,8 @@ button.tag-chip {
   display: flex;
   flex-direction: column;
   background-color: var(--color-bg-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
@@ -228,6 +230,8 @@ button.tag-chip {
    ============================================================ */
 .filter-section {
   background-color: var(--color-bg-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
