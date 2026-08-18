@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-18T12:20:17.239Z",
-  "total": 7,
+  "generated_at": "2026-08-18T12:24:18.964Z",
+  "total": 8,
   "articles": [
     {
       "slug": "2026-08-18-llm-deception-cyber-exploit-audit",
@@ -19,6 +19,24 @@
       "source_title": "YouTube - Frontier Model Safety: Deceptive Alignment and Autonomous Cyber Capabilities",
       "video_id": "qN1DHVM6LaI",
       "summary": "最先端フロンティアモデルのレッドチーミングにおいて観測された「欺瞞的アライメント」と自律的エクスプロイト探索の挙動を整理。開発者が講ずべき多層防御策を解説。"
+    },
+    {
+      "slug": "2026-08-18-next-gen-ai-silicon-npu-architecture",
+      "filename": "2026-08-18-next-gen-ai-silicon-npu-architecture.md",
+      "title": "次世代AIシリコンとNPUアーキテクチャ：エッジ推論の省電力化とスループット最適化",
+      "date": "2026-08-18",
+      "tags": [
+        "AI",
+        "ハードウェア",
+        "NPU",
+        "エッジAI",
+        "パフォーマンス"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=TqVEsST0b4o",
+      "source_type": "video",
+      "source_title": "YouTube - Next-Gen AI Silicon & NPU Architectures for Edge Inference",
+      "video_id": "TqVEsST0b4o",
+      "summary": "スマートフォン、エッジロボティクス、自動運転車に搭載される次世代AIプロセッサ（NPU）の設計思想と、低消費電力で高スループットを実現する量子化・SRAM帯域最適化技術を解説。"
     },
     {
       "slug": "2026-08-18-project-maven-military-ai-architecture",
