@@ -141,7 +141,7 @@ li {
   margin-bottom: var(--space-2);
 }
 
-/* レイアウトコンテナ (画面幅に柔軟フィット) */
+/* レイアウトコンテナ */
 .site-container {
   width: 100%;
   max-width: var(--max-width-container);
@@ -155,14 +155,6 @@ li {
   .site-container {
     padding-left: var(--space-6);
     padding-right: var(--space-6);
-  }
-}
-
-@media (min-width: 1440px) {
-  .site-container {
-    padding-left: var(--space-8);
-    padding-right: var(--space-8);
-    max-width: 95vw;
   }
 }
 
