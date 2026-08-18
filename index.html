@@ -137,34 +137,45 @@
   </header>
 
   <!-- メインコンテンツ -->
-  <main id="main-content" class="site-main">
+  <main id="main-content" class="site-main" style="padding-top: 0;">
     <div class="site-container">
-      <!-- サイト説明文 (メインは大きめのSplit Text、サブは固定の小さめフォント) -->
-      <section class="hero-description-section" style="margin: var(--space-6) 0 var(--space-8) 0; text-align: center;">
+      <!-- ファーストビュー: サイト説明のみをゆったりと全画面中央に配置 -->
+      <section class="hero-firstview" aria-label="Site introduction">
         <h1 class="sr-only" data-i18n="siteTitle">Tech Summary Hub</h1>
         
-        <!-- メイン説明文 (大きめのフォント + Split Text アニメーション) -->
-        <p id="split-text-target" class="hero-description-text" style="font-size: 1.75rem; font-weight: 700; line-height: 1.4; color: var(--color-text-main); max-width: 880px; margin: 0 auto; letter-spacing: -0.02em;">
-          Curated summaries of next-generation tech articles & developer talks. Powered by in-browser AI.
-        </p>
+        <div style="margin: auto 0;">
+          <!-- メイン説明文 (大きめのフォント + Split Text アニメーション) -->
+          <p id="split-text-target" class="hero-description-text" style="font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 700; line-height: 1.35; color: var(--color-text-main); max-width: 920px; margin: 0 auto; letter-spacing: -0.02em;">
+            Curated summaries of next-generation tech articles & developer talks. Powered by in-browser AI.
+          </p>
 
-        <!-- サブ詳細説明 (固定・小さめフォント) -->
-        <p id="static-site-desc" data-i18n="siteDescription" style="font-size: var(--font-size-sm); color: var(--color-text-muted); max-width: 720px; margin: var(--space-3) auto 0 auto; line-height: 1.6;">
-          A high-performance static knowledge hub covering modern AI, Web architecture, cloud security, and developer tools. Summaries are locally generated via in-browser WebGPU (WebLLM) with zero server costs and 100% privacy.
-        </p>
+          <!-- サブ詳細説明 (固定・小さめフォント) -->
+          <p id="static-site-desc" data-i18n="siteDescription" style="font-size: var(--font-size-base); color: var(--color-text-muted); max-width: 740px; margin: var(--space-5) auto 0 auto; line-height: 1.7;">
+            A high-performance static knowledge hub covering modern AI, Web architecture, cloud security, and developer tools. Summaries are locally generated via in-browser WebGPU (WebLLM) with zero server costs and 100% privacy.
+          </p>
 
-        <!-- アクティブフィルター表示 (Card Navで選択された場合) -->
-        <div id="active-filter-badge" style="display: none; margin-top: var(--space-4); align-items: center; justify-content: center; gap: var(--space-2);">
-          <span style="font-size: var(--font-size-sm); color: var(--color-text-muted);">Filtering:</span>
-          <span id="active-filter-name" class="tag-chip is-active" style="cursor: pointer;" title="Click to clear filter">#Tag ✕</span>
+          <!-- アクティブフィルター表示 (Card Navで選択された場合) -->
+          <div id="active-filter-badge" style="display: none; margin-top: var(--space-4); align-items: center; justify-content: center; gap: var(--space-2);">
+            <span style="font-size: var(--font-size-sm); color: var(--color-text-muted);">Filtering:</span>
+            <span id="active-filter-name" class="tag-chip is-active" style="cursor: pointer;" title="Click to clear filter">#Tag ✕</span>
+          </div>
         </div>
+
+        <!-- スクロール誘導インジケータ -->
+        <a href="#articles-section" class="scroll-indicator" aria-label="Scroll to articles">
+          <span data-i18n="scrollDown">Scroll down to explore summaries</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <polyline points="19 12 12 19 5 12"></polyline>
+          </svg>
+        </a>
       </section>
 
       <!-- スクリーンリーダー向け検索結果アナウンス -->
       <div id="result-count-live" class="sr-only" aria-live="polite"></div>
 
-      <!-- 記事カード一覧 -->
-      <section aria-label="Article cards list">
+      <!-- 記事カード一覧 (スクロール後に閲覧) -->
+      <section id="articles-section" aria-label="Article cards list" style="padding-top: var(--space-6); padding-bottom: var(--space-12);">
         <ul id="articles-grid" class="articles-grid">
           <!-- JSで動的生成 -->
         </ul>

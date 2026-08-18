@@ -76,9 +76,9 @@
   --line-height-normal: 1.7;
   --line-height-loose: 1.9;
 
-  /* コンテナ幅・行長 */
+  /* コンテナ幅・行長 (ワイド画面対応) */
   --max-width-content: 72ch;
-  --max-width-container: 1120px;
+  --max-width-container: 1640px;
 
   /* 角丸 & 影 */
   --radius-sm: 4px;

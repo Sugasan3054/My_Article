@@ -128,20 +128,29 @@ button.tag-chip {
 }
 
 /* ============================================================
-   記事カード (トップページ一覧)
+   記事カード (トップページ一覧 - ワイド・左右対称レイアウト)
    ============================================================ */
 .articles-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-6);
+  gap: var(--space-8);
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
+  width: 100%;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 700px) {
   .articles-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8);
+  }
+}
+
+@media (min-width: 1180px) {
+  .articles-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-8);
   }
 }
 
@@ -150,19 +159,20 @@ button.tag-chip {
   display: flex;
   flex-direction: column;
   background-color: var(--color-bg-surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-6);
+  padding: var(--space-8);
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  height: 100%;
 }
 
 .article-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
   border-color: var(--color-primary-border);
+  box-shadow: var(--shadow-lg);
 }
 
 .article-card-header {
@@ -170,47 +180,38 @@ button.tag-chip {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
 
 .article-card-title {
-  font-size: var(--font-size-xl);
+  font-size: 1.25rem;
+  font-weight: 700;
   line-height: var(--line-height-tight);
-  margin-bottom: var(--space-3);
+  margin-top: 0;
+  margin-bottom: var(--space-4);
 }
 
-/* カード全体をクリック可能にする擬似要素リンク (オーバーレイではなく標準アクセシブルなカードリンク) */
 .article-card-link {
   color: var(--color-text-main);
   text-decoration: none;
-}
-
-.article-card-link::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
+  transition: color var(--transition-fast);
 }
 
 .article-card-link:hover {
   color: var(--color-primary);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .article-card-summary {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--color-text-muted);
-  line-height: var(--line-height-normal);
-  margin-bottom: var(--space-4);
+  line-height: 1.7;
+  margin-bottom: var(--space-6);
   flex-grow: 1;
-  /* 3行切り詰め */
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -619,7 +620,45 @@ button.tag-chip {
   text-align: left;
 }
 
-.markdown-body th {
-  background-color: var(--color-bg-subtle);
-  font-weight: 700;
+/* ============================================================
+   ファーストビュー (Hero Firstview) & スクロールインジケータ
+   ============================================================ */
+.hero-firstview {
+  min-height: calc(100vh - 130px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: var(--space-8) var(--space-4);
+}
+
+.scroll-indicator {
+  margin-top: auto;
+  padding-top: var(--space-6);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  animation: bounceSlow 2s infinite ease-in-out;
+}
+
+.scroll-indicator:hover {
+  color: var(--color-primary);
+}
+
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
 }

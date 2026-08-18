@@ -5,7 +5,7 @@
 .card-nav-wrapper {
   position: relative;
   width: 100%;
-  max-width: 1060px;
+  max-width: 1200px;
   margin: 0 auto var(--space-6) auto;
   z-index: 90;
 }
