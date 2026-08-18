@@ -1,7 +1,96 @@
 {
-  "generated_at": "2026-08-18T11:55:38.381Z",
-  "total": 2,
+  "generated_at": "2026-08-18T12:05:01.128Z",
+  "total": 7,
   "articles": [
+    {
+      "slug": "2026-08-18-llm-deception-cyber-exploit-audit",
+      "filename": "2026-08-18-llm-deception-cyber-exploit-audit.md",
+      "title": "生成AIの欺瞞行動と自律的サイバー攻撃耐性：安全性テスト報告と防御策",
+      "date": "2026-08-18",
+      "tags": [
+        "AI",
+        "セキュリティ",
+        "サイバーセキュリティ",
+        "LLM",
+        "脆弱性"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=qN1DHVM6LaI",
+      "source_type": "video",
+      "source_title": "YouTube - Frontier Model Safety: Deceptive Alignment and Autonomous Cyber Capabilities",
+      "video_id": "qN1DHVM6LaI",
+      "summary": "最先端フロンティアモデルのレッドチーミングにおいて観測された「欺瞞的アライメント」と自律的エクスプロイト探索の挙動を整理。開発者が講ずべき多層防御策を解説。"
+    },
+    {
+      "slug": "2026-08-18-project-maven-military-ai-architecture",
+      "filename": "2026-08-18-project-maven-military-ai-architecture.md",
+      "title": "Project Mavenとリアルタイム戦況分析AI：エッジ推論と大規模データ統合基盤",
+      "date": "2026-08-18",
+      "tags": [
+        "AI",
+        "アーキテクチャ",
+        "リアルタイム処理",
+        "エッジAI",
+        "セキュリティ"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=rqufmN1lRFA",
+      "source_type": "video",
+      "source_title": "YouTube - Project Maven AI Architecture & Real-Time Operational Intelligence",
+      "video_id": "rqufmN1lRFA",
+      "summary": "衛星画像・ドローン映像・レーダー信号など膨大な異種データをミリ秒単位で統合・識別する軍事AI「Project Maven」のデータパイプラインとリアルタイム推論基盤の要点を整理。"
+    },
+    {
+      "slug": "2026-08-17-autonomous-ai-agents-safety-testing",
+      "filename": "2026-08-17-autonomous-ai-agents-safety-testing.md",
+      "title": "自律型AIエージェントの安全性評価とサンドボックス検証基盤の設計",
+      "date": "2026-08-17",
+      "tags": [
+        "AI",
+        "LLM",
+        "エージェント",
+        "セキュリティ",
+        "Web開発"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=2jtQ0QEdQ4Q",
+      "source_type": "video",
+      "source_title": "YouTube - Evaluating Autonomous AI Agents Safety & Sandboxing Architectures",
+      "video_id": "2jtQ0QEdQ4Q",
+      "summary": "ツール実行・コード実行を行う自律型AIエージェントの安全性検証手法と、eBPF・gVisorを活用した堅牢なマイクロサンドボックス隔離アーキテクチャを要約。"
+    },
+    {
+      "slug": "2026-08-17-defense-tech-ai-drone-systems",
+      "filename": "2026-08-17-defense-tech-ai-drone-systems.md",
+      "title": "防衛テックとAIドローンシステム：自律型迎撃技術と国内量産化の衝撃",
+      "date": "2026-08-17",
+      "tags": [
+        "AI",
+        "セキュリティ",
+        "自律システム",
+        "防衛テック",
+        "エッジAI"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=Afr2-EcErPQ",
+      "source_type": "video",
+      "source_title": "YouTube - Next-Gen Defense Tech & AI Autonomous Drone Interception",
+      "video_id": "Afr2-EcErPQ",
+      "summary": "欧州ヘルシング社との提携やAI迎撃ドローンの自律追尾・電子戦耐性技術を解説。エッジAIによる完全自律型迎撃アーキテクチャと国内量産体制のインパクトを要約。"
+    },
+    {
+      "slug": "2026-08-16-humanoid-robotics-physical-ai",
+      "filename": "2026-08-16-humanoid-robotics-physical-ai.md",
+      "title": "ヒューマノイドロボットとフィジカルAIの最前線：日中開発競争と実用化の展望",
+      "date": "2026-08-16",
+      "tags": [
+        "AI",
+        "ロボティクス",
+        "フィジカルAI",
+        "ハードウェア"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=sCIz9B45IYg",
+      "source_type": "video",
+      "source_title": "YouTube - Physical AI and Humanoid Robotics Evolution",
+      "video_id": "sCIz9B45IYg",
+      "summary": "身体性を持つ人工知能「フィジカルAI」と二足歩行ヒューマノイドロボットの最新進化を要約。日中両国の開発アプローチ、センサーフュージョン、強化学習による歩行制御技術を解説します。"
+    },
     {
       "slug": "2026-08-15-webgpu-modern-web-llm",
       "filename": "2026-08-15-webgpu-modern-web-llm.md",

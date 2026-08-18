@@ -139,11 +139,18 @@
   <!-- メインコンテンツ -->
   <main id="main-content" class="site-main">
     <div class="site-container">
-      <!-- サイト説明文 (Split Text アニメーション) -->
-      <section class="hero-description-section" style="margin: var(--space-4) 0 var(--space-8) 0; text-align: center;">
+      <!-- サイト説明文 (メインは大きめのSplit Text、サブは固定の小さめフォント) -->
+      <section class="hero-description-section" style="margin: var(--space-6) 0 var(--space-8) 0; text-align: center;">
         <h1 class="sr-only" data-i18n="siteTitle">Tech Summary Hub</h1>
-        <p id="split-text-target" class="hero-description-text" style="font-size: var(--font-size-xl); font-weight: 600; line-height: 1.6; color: var(--color-text-main); max-width: 800px; margin: 0 auto; letter-spacing: -0.01em;">
+        
+        <!-- メイン説明文 (大きめのフォント + Split Text アニメーション) -->
+        <p id="split-text-target" class="hero-description-text" style="font-size: 1.75rem; font-weight: 700; line-height: 1.4; color: var(--color-text-main); max-width: 880px; margin: 0 auto; letter-spacing: -0.02em;">
           Curated summaries of next-generation tech articles & developer talks. Powered by in-browser AI.
+        </p>
+
+        <!-- サブ詳細説明 (固定・小さめフォント) -->
+        <p id="static-site-desc" data-i18n="siteDescription" style="font-size: var(--font-size-sm); color: var(--color-text-muted); max-width: 720px; margin: var(--space-3) auto 0 auto; line-height: 1.6;">
+          A high-performance static knowledge hub covering modern AI, Web architecture, cloud security, and developer tools. Summaries are locally generated via in-browser WebGPU (WebLLM) with zero server costs and 100% privacy.
         </p>
 
         <!-- アクティブフィルター表示 (Card Navで選択された場合) -->

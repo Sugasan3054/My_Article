@@ -9,6 +9,7 @@ export const translations = {
   en: {
     siteTitle: 'Tech Summary Hub',
     siteSubtitle: 'Curated summaries of next-generation tech articles & developer talks. Powered by in-browser AI.',
+    siteDescription: 'A high-performance static knowledge hub covering modern AI, Web architecture, cloud security, and developer tools. Summaries are locally generated via in-browser WebGPU (WebLLM) with zero server costs and 100% privacy.',
     navArticles: 'Articles',
     navSummarizer: 'AI Summarizer',
     searchPlaceholder: 'Search articles...',
@@ -79,6 +80,7 @@ export const translations = {
   ja: {
     siteTitle: 'Tech Summary Hub',
     siteSubtitle: '次世代の技術記事・開発者セッションを厳選要約。ブラウザ内AIによるゼロサーバー要約ナレッジハブ。',
+    siteDescription: '最先端のAI、Webアーキテクチャ、セキュリティ、開発者向けツールを網羅したナレッジポータルです。ブラウザ内WebGPU（WebLLM）により外部APIコスト不要・完全プライベートに要約を生成・管理できます。',
     navArticles: '記事一覧',
     navSummarizer: '要約ツール (自分用)',
     searchPlaceholder: '記事を検索...',
