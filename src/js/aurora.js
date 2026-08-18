@@ -106,18 +106,14 @@ export function initAurora(containerSelector = '#aurora-bg', options = {}) {
   const container = document.querySelector(containerSelector);
   if (!container) return;
 
-  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  // ライトブルー・ブルー基調の洗練されたカラーストップ
-  const defaultColors = isDark
-    ? ['#002966', '#0070e0', '#58a6ff'] // ダークモード用
-    : ['#004098', '#00a6fb', '#bfe0ff']; // ライトモード用
+  // 常時ダークモード用の深みのあるサイバーブルー・シアン系オーロラ
+  const defaultColors = ['#050b14', '#0052cc', '#38bdf8'];
 
   const config = {
     colorStops: options.colorStops || defaultColors,
-    amplitude: options.amplitude ?? 1.2,
-    blend: options.blend ?? 0.6,
-    speed: options.speed ?? 0.6,
+    amplitude: options.amplitude ?? 1.25,
+    blend: options.blend ?? 0.65,
+    speed: options.speed ?? 0.5,
   };
 
   const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true });
