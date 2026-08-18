@@ -128,7 +128,7 @@ button.tag-chip {
 }
 
 /* ============================================================
-   記事カード (トップページ一覧 - PC全画面で広々とした左右対称レイアウト)
+   記事カード (トップページ一覧 - 1枚目画像のようなゆったりとした2列レイアウト)
    ============================================================ */
 .articles-grid {
   display: grid;
@@ -138,18 +138,12 @@ button.tag-chip {
   padding: 0;
   margin: 0 auto;
   width: 100%;
+  max-width: 1100px;
 }
 
 @media (min-width: 768px) {
   .articles-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-8);
-  }
-}
-
-@media (min-width: 1200px) {
-  .articles-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-8);
   }
 }
@@ -187,11 +181,12 @@ button.tag-chip {
 }
 
 .article-card-title {
-  font-size: 1.28rem;
+  font-size: 1.32rem;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.45;
   margin-top: 0;
   margin-bottom: var(--space-4);
+  letter-spacing: -0.01em;
 }
 
 .article-card-link {
@@ -208,7 +203,7 @@ button.tag-chip {
 .article-card-summary {
   font-size: var(--font-size-base);
   color: var(--color-text-muted);
-  line-height: 1.7;
+  line-height: 1.75;
   margin-bottom: var(--space-6);
   flex-grow: 1;
   display: -webkit-box;
